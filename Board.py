@@ -10,16 +10,4 @@ class Board:
         self.magnets = magnets
 
     def get_magnet_pos(self, x: int, y: int):
-        return self.magnets[self.board[x][y]]
-
-    def put_magnet(self, x1: int, y1: int, positive=True):
-        m = self.get_magnet_pos(x1, y1)
-        r = 1
-        if m.position2 == [x1, y1]:
-            r = 2
-        if not positive:
-            r = 3 - r
-        m.put(r)
-
-    def remove_magnet(self, x: int, y: int):
-        self.get_magnet_pos(x, y).remove()
+        return self.magnets[self.board[x][y] - 1]

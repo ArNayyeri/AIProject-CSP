@@ -1,6 +1,6 @@
 from Board import Board
 
-
+# test
 class CSP:
     def __init__(self, board: Board):
         self.board = board

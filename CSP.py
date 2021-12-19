@@ -1,10 +1,30 @@
 from Board import Board
 
-# test
+
 class CSP:
     def __init__(self, board: Board):
         self.board = board
         self.table = [[0 for i in range(board.col)] for j in range(board.row)]
+        self.x = 1
+
+    def check_sign(self, x, y, number):
+        if x + 1 < self.board.row:
+            if self.table[x + 1][y] == number:
+                return False
+
+        if y + 1 < self.board.col:
+            if self.table[x][y + 1] == number:
+                return False
+
+        if x - 1 >= 0:
+            if self.table[x - 1][y] == number:
+                return False
+
+        if y - 1 >= 0:
+            if self.table[x][y - 1] == number:
+                return False
+
+        return True
 
     def place_magnet(self, x: int, y: int, isPositive: bool):
         magnet = self.board.get_magnet_pos(x, y)
@@ -19,9 +39,21 @@ class CSP:
         magnet.put(positive_pos)
 
         x1, y1 = magnet.get_positive_pos()
+
+        if x1 + 1 < self.board.row:
+            if not self.check_sign(x1, y1, 1):
+                self.remove_magnet(x, y)
+                return -1
+
         self.table[x1][y1] = 1
 
         x1, y1 = magnet.get_negative_pos()
+
+        if x1 + 1 < self.board.row:
+            if not self.check_sign(x1, y1, -1):
+                self.remove_magnet(x, y)
+                return -1
+
         self.table[x1][y1] = -1
 
         return magnet
@@ -91,19 +123,16 @@ class CSP:
 
         magnet = self.place_magnet(x, y, True)
         check = self.check_goal()
+        next_magnet = self.board.get_next_magnet(x, y)
 
         if check == 1:
             return True
-
-        if check == 0:
-            if magnet.position[0] != [x, y + 1] and magnet.position[1] != [x, y + 1] and y + 1 < self.board.col:
-                if self.play(x, y + 1):
-                    return True
-            if magnet.position[0] != [x + 1, y] and magnet.position[1] != [x + 1, y] and x + 1 < self.board.row:
-                if self.play(x + 1, y):
+        if magnet != -1:
+            if check == 0 and next_magnet != -1:
+                if self.play(next_magnet[0], next_magnet[1]):
                     return True
 
-        self.remove_magnet(x, y)
+            self.remove_magnet(x, y)
 
         magnet = self.place_magnet(x, y, False)
         check = self.check_goal()
@@ -111,27 +140,21 @@ class CSP:
         if check == 1:
             return True
 
-        if check == 0:
-            if magnet.position[0] != [x, y + 1] and magnet.position[1] != [x, y + 1] and y + 1 < self.board.col:
-                if self.play(x, y + 1):
+        if magnet != -1:
+            if check == 0 and next_magnet != -1:
+                if self.play(next_magnet[0], next_magnet[1]):
                     return True
-            if magnet.position[0] != [x + 1, y] and magnet.position[1] != [x + 1, y] and x + 1 < self.board.row:
-                if self.play(x + 1, y):
-                    return True
-
-        self.remove_magnet(x, y)
-
-        if y + 1 < self.board.col:
-            if self.play(x, y + 1):
-                return True
-        if x + 1 < self.board.row:
-            if self.play(x + 1, y):
+            self.remove_magnet(x, y)
+        if next_magnet != -1:
+            if self.play(next_magnet[0], next_magnet[1]):
                 return True
 
         return False
 
     def print(self):
         with open('result.txt', 'a') as buffer:
+            buffer.write(str(self.x) + "\n")
+            self.x += 1
             for i in self.table:
                 for j in i:
                     buffer.write(str(j) + ' ')

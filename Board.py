@@ -11,3 +11,8 @@ class Board:
 
     def get_magnet_pos(self, x: int, y: int):
         return self.magnets[self.board[x][y] - 1]
+
+    def get_next_magnet(self, x, y):
+        if self.board[x][y] == len(self.magnets):
+            return -1
+        return self.magnets[self.board[x][y]].position[0]

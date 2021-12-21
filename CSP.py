@@ -1,4 +1,5 @@
 from Board import Board
+from Magnet import Magnet
 
 
 class CSP:
@@ -7,49 +8,56 @@ class CSP:
         self.table = [[0 for i in range(board.col)] for j in range(board.row)]
         self.x = 1
 
-    def check_sign(self, x, y, number):
-        if x + 1 < self.board.row:
-            if self.table[x + 1][y] == number:
+    def checkNeighbour(self , magnet : Magnet):
+            
+        #Positive Check
+
+        xp , yp = magnet.get_positive_pos()
+
+        if(xp - 1 >= 0):
+            temp = self.board.get_magnet_pos(xp - 1, yp)
+            if(temp != magnet and temp.isExist and temp.get_positive_pos() == [xp - 1 , yp]):
                 return False
 
-        if y + 1 < self.board.col:
-            if self.table[x][y + 1] == number:
+        if(yp - 1 >= 0):
+            temp = self.board.get_magnet_pos(xp, yp - 1)
+            if(temp != magnet and temp.isExist and temp.get_positive_pos() == [xp , yp - 1]):
                 return False
 
-        if x - 1 >= 0:
-            if self.table[x - 1][y] == number:
+        if(xp + 1 < self.board.col):
+            temp = self.board.get_magnet_pos(xp + 1, yp)
+            if(temp != magnet and temp.isExist and temp.get_positive_pos() == [xp + 1, yp]):
                 return False
 
-        if y - 1 >= 0:
-            if self.table[x][y - 1] == number:
+        if(yp + 1 < self.board.row):
+            temp = self.board.get_magnet_pos(xp , yp + 1)
+            if(temp != magnet and temp.isExist and temp.get_positive_pos() == [xp , yp + 1]):
                 return False
 
-        return True
+        # Negative Check
 
-    def checkNeighbour(self , x: int, y: int):
-        magnet = self.board.get_magnet_pos(x, y)
+        xn , yn = magnet.get_negative_pos()
 
-        temp = None
-        samePolarity = False
+        if(xn - 1 >= 0):
+            temp = self.board.get_magnet_pos(xn - 1, yn)
+            if(temp != magnet and temp.isExist and temp.get_negative_pos() == [xn - 1, yn]):
+                return False
 
-        if(x - 1 >= 0):
-            temp[0] = self.board.get_magnet_pos(x - 1, y)
+        if(yn - 1 >= 0):
+            temp = self.board.get_magnet_pos(xn, yn - 1)
+            if(temp != magnet and temp.isExist and temp.get_negative_pos() == [xn, yn - 1]):
+                return False
 
-        if(y - 1 >= 0):
-            temp[1] = self.board.get_magnet_pos(x, y - 1)
+        if(xn + 1 < self.board.col):
+            temp = self.board.get_magnet_pos(xn + 1, yn)
+            if(temp != magnet and temp.isExist and temp.get_negative_pos() == [xn + 1, yn]):
+                return False
 
-        if(x + 1 <= self.board.col):
-            temp[2] = self.board.get_magnet_pos(x + 1, y)
+        if(yn + 1 < self.board.row):
+            temp = self.board.get_magnet_pos(xn , yn + 1)
+            if(temp != magnet and temp.isExist and temp.get_negative_pos() == [xn , yn + 1]):
+                return False
 
-        if(y + 1 <= self.board.row):
-            temp[3] = self.board.get_magnet_pos(x, y + 1)
-
-        for i in temp :
-            if(magnet != i) :
-                if(magnet.get_positive_pos() == i.get_positive_pos()):
-                    return False
-                if(magnet.get_negative_pos() == i.get_negative_pos()):
-                    return False
         return True
 
     def place_magnet(self, x: int, y: int, isPositive: bool):
@@ -57,7 +65,7 @@ class CSP:
 
         positive_pos = 0
 
-        if(not self.checkNeighbour(x , y)):
+        if(not self.checkNeighbour(magnet)):
             return None
 
         if magnet.position[1] == [x, y]:

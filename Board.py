@@ -43,11 +43,11 @@ class Board:
             if self.table[xp][yp - 1] == 1:
                 return False
 
-        if(xp + 1 < self.col):
+        if(xp + 1 < self.row):
             if self.table[xp + 1][yp] == 1:
                 return False
 
-        if(yp + 1 < self.row):
+        if(yp + 1 < self.col):
             if self.table[xp][yp + 1] == 1:
                 return False
 
@@ -63,11 +63,11 @@ class Board:
             if self.table[xn][yn - 1] == -1:
                 return False
 
-        if(xn + 1 < self.col):
+        if(xn + 1 < self.row):
             if self.table[xn + 1][yn] == -1:
                 return False
 
-        if(yn + 1 < self.row):
+        if(yn + 1 < self.col):
             if self.table[xn][yn + 1] == -1:
                 return False
 

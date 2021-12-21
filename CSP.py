@@ -6,10 +6,39 @@ class CSP:
         self.board = board
         self.table = [[0 for i in range(board.col)] for j in range(board.row)]
 
+    def checkNeighbour(self , x: int, y: int):
+        magnet = self.board.get_magnet_pos(x, y)
+
+        temp = None
+        samePolarity = False
+
+        if(x - 1 >= 0):
+            temp[0] = self.board.get_magnet_pos(x - 1, y)
+
+        if(y - 1 >= 0):
+            temp[1] = self.board.get_magnet_pos(x, y - 1)
+
+        if(x + 1 <= self.board.col):
+            temp[2] = self.board.get_magnet_pos(x + 1, y)
+
+        if(y + 1 <= self.board.row):
+            temp[3] = self.board.get_magnet_pos(x, y + 1)
+
+        for i in temp :
+            if(magnet != i) :
+                if(magnet.get_positive_pos() == i.get_positive_pos()):
+                    return False
+                if(magnet.get_negative_pos() == i.get_negative_pos()):
+                    return False
+        return True
+
     def place_magnet(self, x: int, y: int, isPositive: bool):
         magnet = self.board.get_magnet_pos(x, y)
 
         positive_pos = 0
+
+        if(not self.checkNeighbour(x , y)):
+            return None
 
         if magnet.position[1] == [x, y]:
             positive_pos = 1
@@ -55,26 +84,26 @@ class CSP:
     def check_goal(self):
         isGoal = 1
         for i in range(self.board.row):
-            s = self.sum_row(i, True)
+            s = self.sum_row(i, True)   # positive count
             if s > self.board.row_limit_p[i]:
                 return -1
             elif s < self.board.row_limit_p[i]:
                 isGoal = 0
 
-            s = self.sum_row(i, False)
+            s = self.sum_row(i, False)  # negative count
             if s > self.board.row_limit_n[i]:
                 return -1
             elif s < self.board.row_limit_n[i]:
                 isGoal = 0
 
         for i in range(self.board.col):
-            s = self.sum_col(i, True)
+            s = self.sum_col(i, True)   # positive count
             if s > self.board.col_limit_p[i]:
                 return -1
             elif s < self.board.col_limit_p[i]:
                 isGoal = 0
 
-            s = self.sum_col(i, False)
+            s = self.sum_col(i, False)  # negative count
             if s > self.board.col_limit_n[i]:
                 return -1
             elif s < self.board.col_limit_n[i]:

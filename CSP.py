@@ -192,7 +192,7 @@ class CSP:
                         print('+' , '' , end='')
                     if j == -1:
                         print('-' , '' , end='')
-                    else :
+                    if j == 0 :
                         print('0' , '' , end='')
 
                     buffer.write(str(j) + ' ')

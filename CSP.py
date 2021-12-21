@@ -63,35 +63,17 @@ class CSP:
     def place_magnet(self, x: int, y: int, isPositive: bool):
         magnet = self.board.get_magnet_pos(x, y)
 
-        positive_pos = 0
+        magnet.put(x , y , isPositive)
 
-        if(not self.checkNeighbour(magnet)):
+        if not self.checkNeighbour(magnet):
+            self.remove_magnet(x , y)
             return None
 
-        if magnet.position[1] == [x, y]:
-            positive_pos = 1
-        if not isPositive:
-            positive_pos = 1 - positive_pos
+        xp, yp = magnet.get_positive_pos()
+        xn, yn = magnet.get_negative_pos()
 
-        magnet.put(positive_pos)
-
-        x1, y1 = magnet.get_positive_pos()
-
-        if x1 + 1 < self.board.row:
-            if not self.check_sign(x1, y1, 1):
-                self.remove_magnet(x, y)
-                return -1
-
-        self.table[x1][y1] = 1
-
-        x1, y1 = magnet.get_negative_pos()
-
-        if x1 + 1 < self.board.row:
-            if not self.check_sign(x1, y1, -1):
-                self.remove_magnet(x, y)
-                return -1
-
-        self.table[x1][y1] = -1
+        self.table[xp][yp] = 1
+        self.table[xn][yn] = -1
 
         return magnet
 

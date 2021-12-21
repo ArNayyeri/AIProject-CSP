@@ -24,6 +24,8 @@ if __name__ == '__main__':
 
     board = Board(row, col, row_limit_p, col_limit_p, row_limit_n, col_limit_n, mat, m)
 
+    open('result.txt', 'w').close()
+            
     csp = CSP(board)
     csp.play(0, 0)
 

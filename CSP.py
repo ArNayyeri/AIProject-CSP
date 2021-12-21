@@ -175,17 +175,27 @@ class CSP:
 
         if check == 1:
             return True
-        else :
+        elif magnet != None and magnet.isExist:
             self.remove_magnet(x , y)
 
         return False
 
     def print(self):
+        print("-------------------------")
+
         with open('result.txt', 'a') as buffer:
             buffer.write(str(self.x) + "\n")
             self.x += 1
             for i in self.table:
                 for j in i:
+                    if j == 1:
+                        print('+' , '' , end='')
+                    if j == -1:
+                        print('-' , '' , end='')
+                    else :
+                        print('0' , '' , end='')
+
                     buffer.write(str(j) + ' ')
                 buffer.write("\n")
+                print()
             buffer.write("------------------\n")

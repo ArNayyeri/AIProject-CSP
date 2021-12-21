@@ -7,7 +7,7 @@ class CSP:
         self.board = board
         self.x = 1
 
-    def checklimitation(self) :
+    def checklimitation_row(self) :
         for i in range(self.board.row):
             s = self.board.sum_row(i, True)   # positive count
             if s > self.board.row_limit_p[i]:
@@ -17,6 +17,9 @@ class CSP:
             if s > self.board.row_limit_n[i]:
                 return False
 
+        return True
+    
+    def checklimitation_col(self) :
         for i in range(self.board.col):
             s = self.board.sum_col(i, True)   # positive count
             if s > self.board.col_limit_p[i]:
@@ -64,9 +67,10 @@ class CSP:
         if(magnet != None):
             self.print()
 
-            limitation = self.checklimitation()
+            limitation_col = self.checklimitation_col()
+            limitation_row = self.checklimitation_row()
 
-            if(not limitation):
+            if(not limitation_col and not limitation_row):
                 self.board.remove_magnet(x, y)
                 magnet = None
         

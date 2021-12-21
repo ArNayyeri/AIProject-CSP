@@ -103,32 +103,45 @@ class CSP:
                 s += 1
         return s
 
-    def check_goal(self):
-        isGoal = 1
+    def checklimitation(self) :
         for i in range(self.board.row):
             s = self.sum_row(i, True)   # positive count
             if s > self.board.row_limit_p[i]:
-                return -1
-            elif s < self.board.row_limit_p[i]:
-                isGoal = 0
+                return False
 
             s = self.sum_row(i, False)  # negative count
             if s > self.board.row_limit_n[i]:
-                return -1
-            elif s < self.board.row_limit_n[i]:
-                isGoal = 0
+                return False
 
         for i in range(self.board.col):
             s = self.sum_col(i, True)   # positive count
             if s > self.board.col_limit_p[i]:
-                return -1
-            elif s < self.board.col_limit_p[i]:
-                isGoal = 0
+                return False
 
             s = self.sum_col(i, False)  # negative count
             if s > self.board.col_limit_n[i]:
-                return -1
-            elif s < self.board.col_limit_n[i]:
+                return False
+
+        return True
+
+    def check_goal(self):
+        isGoal = 1
+        for i in range(self.board.row):
+            s = self.sum_row(i, True)   # positive count
+            if s < self.board.row_limit_p[i]:
+                isGoal = 0
+
+            s = self.sum_row(i, False)  # negative count
+            if s < self.board.row_limit_n[i]:
+                isGoal = 0
+
+        for i in range(self.board.col):
+            s = self.sum_col(i, True)   # positive count
+            if s < self.board.col_limit_p[i]:
+                isGoal = 0
+
+            s = self.sum_col(i, False)  # negative count
+            if s < self.board.col_limit_n[i]:
                 isGoal = 0
 
         return isGoal

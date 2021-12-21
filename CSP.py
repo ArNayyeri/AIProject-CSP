@@ -147,39 +147,36 @@ class CSP:
         return isGoal
 
     def play(self, x: int, y: int):
-        self.print()
+        
         check = self.check_goal()
 
         if check == 1:
             return True
 
         magnet = self.place_magnet(x, y, True)
-        check = self.check_goal()
+        if(magnet == None):
+            magnet = self.place_magnet(x, y, False)
+        
+        if(magnet != None):
+            self.print()
+
+        limitation = self.checklimitation()
+
+        if(not limitation):
+            self.remove_magnet(x, y)
+        
         next_magnet = self.board.get_next_magnet(x, y)
 
-        if check == 1:
-            return True
-        if magnet != -1:
-            if check == 0 and next_magnet != -1:
-                if self.play(next_magnet[0], next_magnet[1]):
-                    return True
+        if(next_magnet != None):
+            position = next_magnet.get_postition()
+            self.play(position[0] , position[1])
 
-            self.remove_magnet(x, y)
-
-        magnet = self.place_magnet(x, y, False)
         check = self.check_goal()
 
         if check == 1:
             return True
-
-        if magnet != -1:
-            if check == 0 and next_magnet != -1:
-                if self.play(next_magnet[0], next_magnet[1]):
-                    return True
-            self.remove_magnet(x, y)
-        if next_magnet != -1:
-            if self.play(next_magnet[0], next_magnet[1]):
-                return True
+        else :
+            self.remove_magnet(x , y)
 
         return False
 

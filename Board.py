@@ -33,27 +33,22 @@ class Board:
     def checkNeighbour(self , magnet : Magnet):
             
         #Positive Check
-
         xp , yp = magnet.get_positive_pos()
 
         if(xp - 1 >= 0):
-            temp = self.get_magnet_pos(xp - 1, yp)
-            if(temp != magnet and temp.isExist and temp.get_positive_pos() == [xp - 1 , yp]):
+            if self.table[xp - 1][yp] == 1:
                 return False
 
         if(yp - 1 >= 0):
-            temp = self.get_magnet_pos(xp, yp - 1)
-            if(temp != magnet and temp.isExist and temp.get_positive_pos() == [xp , yp - 1]):
+            if self.table[xp][yp - 1] == 1:
                 return False
 
         if(xp + 1 < self.col):
-            temp = self.get_magnet_pos(xp + 1, yp)
-            if(temp != magnet and temp.isExist and temp.get_positive_pos() == [xp + 1, yp]):
+            if self.table[xp + 1][yp] == 1:
                 return False
 
         if(yp + 1 < self.row):
-            temp = self.get_magnet_pos(xp , yp + 1)
-            if(temp != magnet and temp.isExist and temp.get_positive_pos() == [xp , yp + 1]):
+            if self.table[xp][yp + 1] == 1:
                 return False
 
         # Negative Check
@@ -61,23 +56,19 @@ class Board:
         xn , yn = magnet.get_negative_pos()
 
         if(xn - 1 >= 0):
-            temp = self.get_magnet_pos(xn - 1, yn)
-            if(temp != magnet and temp.isExist and temp.get_negative_pos() == [xn - 1, yn]):
+            if self.table[xn - 1][yn] == -1:
                 return False
 
         if(yn - 1 >= 0):
-            temp = self.get_magnet_pos(xn, yn - 1)
-            if(temp != magnet and temp.isExist and temp.get_negative_pos() == [xn, yn - 1]):
+            if self.table[xn][yn - 1] == -1:
                 return False
 
         if(xn + 1 < self.col):
-            temp = self.get_magnet_pos(xn + 1, yn)
-            if(temp != magnet and temp.isExist and temp.get_negative_pos() == [xn + 1, yn]):
+            if self.table[xn + 1][yn] == -1:
                 return False
 
         if(yn + 1 < self.row):
-            temp = self.get_magnet_pos(xn , yn + 1)
-            if(temp != magnet and temp.isExist and temp.get_negative_pos() == [xn , yn + 1]):
+            if self.table[xn][yn + 1] == -1:
                 return False
 
         return True
@@ -102,13 +93,14 @@ class Board:
     def remove_magnet(self, x: int, y: int):
         magnet = self.get_magnet_pos(x, y)
 
-        x1, y1 = magnet.get_positive_pos()
-        self.table[x1][y1] = 0
+        if(magnet.isExist):
+            x1, y1 = magnet.get_positive_pos()
+            self.table[x1][y1] = 0
 
-        x1, y1 = magnet.get_negative_pos()
-        self.table[x1][y1] = 0
+            x1, y1 = magnet.get_negative_pos()
+            self.table[x1][y1] = 0
 
-        magnet.remove()
+            magnet.remove()
 
     def sum_row(self, index: int, isPositive: bool):
         s = 0

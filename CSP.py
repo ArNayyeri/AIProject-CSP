@@ -53,39 +53,52 @@ class CSP:
 
         return isGoal
 
+    def get_domain(self , x: int, y: int ) :
+        return [1 , -1 , 0]
+
     def play(self, x: int, y: int):
-        
+        domain = self.get_domain(x , y)
+
         check = self.check_goal()
-
         if check == 1:
-            return True
-
-        magnet = self.board.place_magnet(x, y, True)
-        if(magnet == None):
-            magnet = self.board.place_magnet(x, y, False)
-        
-        if(magnet != None):
             self.print()
-
-            limitation_col = self.checklimitation_col()
-            limitation_row = self.checklimitation_row()
-
-            if(not limitation_col and not limitation_row):
-                self.board.remove_magnet(x, y)
-                magnet = None
-        
-        next_magnet = self.board.get_next_magnet(x, y)
-
-        if(next_magnet != None):
-            position = next_magnet.get_postition()
-            self.play(position[0] , position[1])
-
-        check = self.check_goal()
-
-        if check == 1:
             return True
-        elif magnet != None and magnet.isExist:
-            self.board.remove_magnet(x , y)
+
+        for d in domain:
+            if(d != 0):
+                polarity = True
+                if d == -1:
+                    polarity = False
+                
+                magnet = self.board.place_magnet(x, y, polarity)
+
+                if(magnet != None):
+                    self.print()
+
+                    limitation_col = self.checklimitation_col()
+                    limitation_row = self.checklimitation_row()
+
+                    if(limitation_col and limitation_row):
+                        next_magnet = self.board.get_next_magnet(x, y)
+
+                        if(next_magnet != None):
+                            position = next_magnet.get_postition()
+                            if(self.play(position[0] , position[1])):
+                                return True
+
+            elif d == 0:
+                next_magnet = self.board.get_next_magnet(x, y)
+                if(next_magnet != None):
+                    position = next_magnet.get_postition()
+                    if(self.play(position[0] , position[1])):
+                        return True
+
+            check = self.check_goal()
+            if check == 1:
+                return True
+
+            self.board.remove_magnet(x, y)
+            magnet = None
 
         return False
 

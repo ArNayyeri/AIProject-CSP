@@ -26,3 +26,8 @@ if __name__ == '__main__':
 
     csp = CSP(board)
     csp.play(0, 0)
+
+    for i in csp.table:
+        for j in i:
+            print(j, end=' ')
+        print()

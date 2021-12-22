@@ -1,3 +1,4 @@
+
 class Magnet:
     def __init__(self, x1: int, y1: int,
                  x2: int, y2: int):
@@ -7,6 +8,7 @@ class Magnet:
         self.position.append([x2, y2])
 
         self.isExist = False
+        self.domain = [[x1, y1 , True] , [x1, y1 , False] , 0]
 
         self.positive = -1
         self.negative = -1
@@ -29,6 +31,9 @@ class Magnet:
                 self.negative = 1
 
             self.positive = 1 - self.negative
+
+    def get_domain(self):
+        return self.domain
 
     def remove(self):
         self.isExist = False

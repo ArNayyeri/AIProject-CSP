@@ -64,24 +64,24 @@ class CSP:
 
         return is_goal
 
-    def get_domain(self, x: int, y: int):
-        return [-1, 1, 0]
+    
 
     def play(self, x: int, y: int):
-        domain = self.get_domain(x, y)
 
         check = self.check_goal()
         if check == 1:
             self.print()
             return True
+                    
+        selected_magnet = self.board.get_magnet_pos(x , y)
+        domain = selected_magnet.get_domain()
+
+        neighbours = self.board.get_neighbour_magnets(selected_magnet)
 
         for d in domain:
             if d != 0:
-                polarity = True
-                if d == -1:
-                    polarity = False
 
-                magnet = self.board.place_magnet(x, y, polarity)
+                magnet = self.board.place_magnet(d[0], d[1], d[2])
 
                 if magnet is not None:
                     self.print()

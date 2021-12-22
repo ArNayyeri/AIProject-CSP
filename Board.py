@@ -27,7 +27,10 @@ class Board:
         self.col_all = [0 for i in range(col)]
 
     def get_magnet_pos(self, x: int, y: int) -> Magnet:
-        return self.magnets[self.magnetpos[x][y] - 1]
+        if(x < 0 or y < 0 or x >= self.col or y >= self.row):
+            return None
+        else :
+            return self.magnets[self.magnetpos[x][y] - 1]
 
     def get_next_magnet(self, x, y) -> Magnet:
         magnetId = self.magnetpos[x][y] - 1
@@ -38,6 +41,30 @@ class Board:
             if (magnetId + 1 < len(self.magnets))
             else None
         )
+
+    def update_domain(self , board):
+        return
+
+    def get_neighbour_magnets(self , magnet : Magnet) -> List[Magnet] :
+        magnets = []
+
+        pos1 = magnet.position[0]
+        magnets.append(self.get_magnet_pos(pos1[0] + 1 , pos1[1]))
+        magnets.append(self.get_magnet_pos(pos1[0] - 1 , pos1[1]))
+        magnets.append(self.get_magnet_pos(pos1[0] , pos1[1] + 1))
+        magnets.append(self.get_magnet_pos(pos1[0] , pos1[1] - 1))
+
+        pos2 = magnet.position[1]
+        magnets.append(self.get_magnet_pos(pos2[0] + 1 , pos2[1]))
+        magnets.append(self.get_magnet_pos(pos2[0] - 1 , pos2[1]))
+        magnets.append(self.get_magnet_pos(pos2[0] , pos2[1] + 1))
+        magnets.append(self.get_magnet_pos(pos2[0] , pos2[1] - 1))
+        
+        magnets = list(dict.fromkeys(magnets))
+        magnets.remove(magnet)
+        magnets = list(filter(None, magnets))
+
+        return magnets
 
     def check_neighbour(self, magnet: Magnet):
 

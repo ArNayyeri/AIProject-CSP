@@ -1,5 +1,4 @@
 from Board import Board
-from Magnet import Magnet
 
 
 class CSP:
@@ -7,57 +6,69 @@ class CSP:
         self.board = board
         self.x = 1
 
-    def checklimitation_row(self) :
+    def check_limitation_row(self):
         for i in range(self.board.row):
-            s = self.board.sum_row(i, True)   # positive count
+            s = self.board.sum_row(i, True)  # positive count
             if s > self.board.row_limit_p[i]:
+                return False
+
+            if self.board.row_all[i] == self.board.row and s != self.board.row_limit_p[i]:
                 return False
 
             s = self.board.sum_row(i, False)  # negative count
             if s > self.board.row_limit_n[i]:
                 return False
 
+            if self.board.row_all[i] == self.board.row and s != self.board.row_limit_n[i]:
+                return False
+
         return True
-    
-    def checklimitation_col(self) :
+
+    def check_limitation_col(self):
         for i in range(self.board.col):
-            s = self.board.sum_col(i, True)   # positive count
+            s = self.board.sum_col(i, True)  # positive count
             if s > self.board.col_limit_p[i]:
+                return False
+
+            if self.board.col_all[i] == self.board.col and s != self.board.col_limit_p[i]:
                 return False
 
             s = self.board.sum_col(i, False)  # negative count
             if s > self.board.col_limit_n[i]:
                 return False
 
+            if self.board.col_all[i] == self.board.col and s != self.board.col_limit_n[i]:
+                return False
+
         return True
 
     def check_goal(self):
-        isGoal = 1
+        is_goal = 1
         for i in range(self.board.row):
-            s = self.board.sum_row(i, True)   # positive count
+            s = self.board.sum_row(i, True)  # positive count
             if s < self.board.row_limit_p[i]:
-                isGoal = 0
+                is_goal = 0
 
             s = self.board.sum_row(i, False)  # negative count
             if s < self.board.row_limit_n[i]:
-                isGoal = 0
+                is_goal = 0
 
         for i in range(self.board.col):
-            s = self.board.sum_col(i, True)   # positive count
+            s = self.board.sum_col(i, True)  # positive count
             if s < self.board.col_limit_p[i]:
-                isGoal = 0
+                is_goal = 0
 
             s = self.board.sum_col(i, False)  # negative count
             if s < self.board.col_limit_n[i]:
-                isGoal = 0
+                is_goal = 0
 
-        return isGoal
+        return is_goal
 
-    def get_domain(self , x: int, y: int ) :
-        return [1 , -1 , 0]
+    def get_domain(self, x: int, y: int):
+        return [-1, 1, 0]
 
     def play(self, x: int, y: int):
-        domain = self.get_domain(x , y)
+        domain = self.get_domain(x, y)
 
         check = self.check_goal()
         if check == 1:
@@ -65,33 +76,41 @@ class CSP:
             return True
 
         for d in domain:
-            if(d != 0):
+            if d != 0:
                 polarity = True
                 if d == -1:
                     polarity = False
-                
+
                 magnet = self.board.place_magnet(x, y, polarity)
 
-                if(magnet != None):
+                if magnet is not None:
                     self.print()
 
-                    limitation_col = self.checklimitation_col()
-                    limitation_row = self.checklimitation_row()
+                    limitation_col = self.check_limitation_col()
+                    limitation_row = self.check_limitation_row()
 
-                    if(limitation_col and limitation_row):
+                    if limitation_col and limitation_row:
                         next_magnet = self.board.get_next_magnet(x, y)
 
-                        if(next_magnet != None):
-                            position = next_magnet.get_postition()
-                            if(self.play(position[0] , position[1])):
+                        if next_magnet is not None:
+                            position = next_magnet.get_position()
+                            if self.play(position[0], position[1]):
                                 return True
 
             elif d == 0:
-                next_magnet = self.board.get_next_magnet(x, y)
-                if(next_magnet != None):
-                    position = next_magnet.get_postition()
-                    if(self.play(position[0] , position[1])):
-                        return True
+                self.board.put_empty(x, y)
+
+                limitation_col = self.check_limitation_col()
+                limitation_row = self.check_limitation_row()
+
+                if limitation_col and limitation_row:
+                    next_magnet = self.board.get_next_magnet(x, y)
+
+                    if next_magnet is not None:
+                        position = next_magnet.get_position()
+                        if self.play(position[0], position[1]):
+                            return True
+                self.board.remove_empty(x, y)
 
             check = self.check_goal()
             if check == 1:
@@ -111,11 +130,11 @@ class CSP:
             for i in self.board.table:
                 for j in i:
                     if j == 1:
-                        print('+' , '' , end='')
+                        print('+', '', end='')
                     if j == -1:
-                        print('-' , '' , end='')
-                    if j == 0 :
-                        print('0' , '' , end='')
+                        print('-', '', end='')
+                    if j == 0:
+                        print('0', '', end='')
 
                     buffer.write(str(j) + ' ')
                 buffer.write("\n")

@@ -76,11 +76,8 @@ class CSP:
         selected_magnet = self.board.get_magnet_pos(x , y)
         domain = selected_magnet.get_domain()
 
-        neighbours = self.board.get_neighbour_magnets(selected_magnet)
-
         for d in domain:
             if d != 0:
-
                 magnet = self.board.place_magnet(d[0], d[1], d[2])
 
                 if magnet is not None:
@@ -98,6 +95,7 @@ class CSP:
                                 return True
 
             elif d == 0:
+                self.x += 1
                 self.board.put_empty(x, y)
 
                 limitation_col = self.check_limitation_col()
@@ -110,7 +108,9 @@ class CSP:
                         position = next_magnet.get_position()
                         if self.play(position[0], position[1]):
                             return True
+                            
                 self.board.remove_empty(x, y)
+                
 
             check = self.check_goal()
             if check == 1:

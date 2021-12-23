@@ -5,7 +5,7 @@ import time
 
 if __name__ == '__main__':
 
-    data = open('input3.txt', 'r').readlines()
+    data = open('input2.txt', 'r').readlines()
 
     mat = []
     m = []
@@ -46,10 +46,10 @@ if __name__ == '__main__':
     start = time.time()
 
     csp = CSP(board)
-    csp.play(csp.get_MRV())
+    csp.play()
 
-    csp.print()
+    csp.print(None)
 
     end = time.time()
 
-    print("\nElapsed Time " , round(end - start , 2) , " s" , sep='' , end='')
+    print("\nElapsed Time " , round(end - start , 2) , " s with " , csp.x , " moves" , sep='' , end='')

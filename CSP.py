@@ -93,31 +93,32 @@ class CSP:
         max_value = magnet_score[max_key]
         return max_key
 
-    def play(self , selected_magnet : Magnet):
+    def play(self):
 
         check = self.check_goal()
         if check == 1:
             return True
 
+        selected_magnet = self.get_MRV()
+        if selected_magnet is None:
+            return False
+
         x , y = selected_magnet.get_position()
         domain = selected_magnet.get_domain()
 
+
         for d in domain:
             if d != 0:
-                magnet = self.board.place_magnet(d[0], d[1], d[2])
+                self.board.place_magnet(d[0], d[1], d[2])
 
-                if magnet is not None:
-                    limitation_col = self.check_limitation_col()
-                    limitation_row = self.check_limitation_row()
+                limitation_col = self.check_limitation_col()
+                limitation_row = self.check_limitation_row()
 
-                    if limitation_col and limitation_row:
-                        next_magnet = self.get_MRV()
+                if limitation_col and limitation_row:
+                    self.print(selected_magnet)
+                    if self.play():
+                        return True
 
-                        if next_magnet is not None:
-                            position = next_magnet.get_position()
-                            self.print()
-                            if self.play(next_magnet):
-                                return True
 
             elif d == 0:
                 self.x += 1
@@ -127,13 +128,9 @@ class CSP:
                 limitation_row = self.check_limitation_row()
 
                 if limitation_col and limitation_row:
-                    next_magnet = self.get_MRV()
-
-                    if next_magnet is not None:
-                        position = next_magnet.get_position()
-                        self.print()
-                        if self.play(next_magnet):
-                            return True
+                    self.print(selected_magnet)
+                    if self.play():
+                        return True
 
                 self.board.remove_empty(x, y)
 
@@ -142,31 +139,46 @@ class CSP:
                 return True
 
             self.board.remove_magnet(x, y)
-            magnet = None
 
         return False
 
-    def print(self):
+    def print(self , _magnet : Magnet ):
         print("-------------------------")
 
         with open('result.txt', 'a') as buffer:
             buffer.write(str(self.x) + "\n")
             self.x += 1
+
+            print('+  ' , self.board.col_limit_p)
+            print('  -' , self.board.col_limit_n)
             for i in range(self.board.row):
+                print(self.board.row_limit_p[i] , self.board.row_limit_n[i]  , sep=',' , end=' ')
+
                 for j in range(self.board.col):
                     magnet = self.board.get_magnet_pos(i , j)
 
+                    boldchar = '\033[0m'
+                    if magnet == _magnet:
+                        boldchar = '\x1b[6;30;42m'
+                        
                     value = self.board.table[i][j]
                     if value == 1:
-                        print('+', '', end='')
+                        print(boldchar , '+', '\033[0m', end='')
                     if value == -1:
-                        print('-', '', end='')
+                        print(boldchar , '-', '\033[0m', end='')
                     if value == 0 and not magnet.isEmpty:
-                        print('0', '', end='')
+                        print(boldchar , '0', '\033[0m', end='')
                     if value == 0 and magnet.isEmpty:
-                        print('\u2610', '', end='')
+                        print(boldchar , '\u2610', '\033[0m', end='')
 
                     buffer.write(str(j) + ' ')
+
+                print(' |' , self.board.row_p[i] , ' ', self.board.row_n[i]  , sep='' , end=' ')
+
                 buffer.write("\n")
                 print()
+
+            print('    '  , self.board.col_limit_p , '+  ')
+            print('    '  , self.board.col_limit_n , '  -')
+
             buffer.write("------------------\n")

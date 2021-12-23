@@ -164,7 +164,7 @@ class Board:
 
         return True
 
-    def place_magnet(self, x: int, y: int, isPositive: bool):
+    def place_magnet(self, x: int, y: int, isPositive: bool) -> Magnet:
         magnet = self.get_magnet_pos(x, y)
 
         magnet.put(x, y, isPositive)
@@ -189,7 +189,7 @@ class Board:
 
         return magnet
 
-    def remove_magnet(self, x: int, y: int, is_sum: bool = False):
+    def remove_magnet(self, x: int, y: int, is_sum: bool = False) -> Magnet:
         magnet = self.get_magnet_pos(x, y)
 
         if magnet.isExist:
@@ -215,6 +215,8 @@ class Board:
 
             self.update_domain()
 
+        return magnet
+
     def sum_row(self, index: int, isPositive: bool):
         # s = 0
         # for i in self.table[index]:
@@ -238,7 +240,7 @@ class Board:
         else:
             return self.col_n[index]
 
-    def put_empty(self, x, y):
+    def put_empty(self, x, y) -> Magnet:
         magnet = self.get_magnet_pos(x, y)
         magnet.isEmpty = True
 
@@ -249,7 +251,9 @@ class Board:
 
         self.update_domain()
 
-    def remove_empty(self, x, y):
+        return magnet
+
+    def remove_empty(self, x, y) -> Magnet:
         magnet = self.get_magnet_pos(x, y)
         magnet.isEmpty = False
 
@@ -259,3 +263,5 @@ class Board:
         self.col_all[magnet.position[1][1]] -= 1
 
         self.update_domain()
+
+        return magnet

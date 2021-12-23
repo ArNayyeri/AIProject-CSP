@@ -4,12 +4,12 @@ from Magnet import Magnet
 
 if __name__ == '__main__':
 
-    data = open('input1.txt', 'r').readlines()
+    data = open('input2.txt', 'r').readlines()
 
     mat = []
     m = []
 
-    if(data is not None):
+    if data is not None:
         row, col = list(map(int, data[0].split(' ')))
         row_limit_p = list(map(int, data[1].split(' ')))
         row_limit_n = list(map(int, data[2].split(' ')))
@@ -18,8 +18,8 @@ if __name__ == '__main__':
 
         for i in range(row):
             mat.append(list(map(int, data[5 + i].split(' '))))
-    
-    else :
+
+    else:
         row, col = list(map(int, input().split(' ')))
         row_limit_p = list(map(int, input().split(' ')))
         row_limit_n = list(map(int, input().split(' ')))
@@ -37,8 +37,6 @@ if __name__ == '__main__':
             if j + 1 != col:
                 if mat[i][j] == mat[i][j + 1]:
                     m.append(Magnet(i, j, i, j + 1))
-
-    
 
     board = Board(row, col, row_limit_p, col_limit_p, row_limit_n, col_limit_n, mat, m)
 

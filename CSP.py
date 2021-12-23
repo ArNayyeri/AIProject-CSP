@@ -12,14 +12,14 @@ class CSP:
             if s > self.board.row_limit_p[i]:
                 return False
 
-            if self.board.row_all[i] == self.board.row and s != self.board.row_limit_p[i]:
+            if self.board.row_all[i] == self.board.col and s != self.board.row_limit_p[i]:
                 return False
 
             s = self.board.sum_row(i, False)  # negative count
             if s > self.board.row_limit_n[i]:
                 return False
 
-            if self.board.row_all[i] == self.board.row and s != self.board.row_limit_n[i]:
+            if self.board.row_all[i] == self.board.col and s != self.board.row_limit_n[i]:
                 return False
 
         return True
@@ -30,14 +30,14 @@ class CSP:
             if s > self.board.col_limit_p[i]:
                 return False
 
-            if self.board.col_all[i] == self.board.col and s != self.board.col_limit_p[i]:
+            if self.board.col_all[i] == self.board.row and s != self.board.col_limit_p[i]:
                 return False
 
             s = self.board.sum_col(i, False)  # negative count
             if s > self.board.col_limit_n[i]:
                 return False
 
-            if self.board.col_all[i] == self.board.col and s != self.board.col_limit_n[i]:
+            if self.board.col_all[i] == self.board.row and s != self.board.col_limit_n[i]:
                 return False
 
         return True
@@ -73,8 +73,8 @@ class CSP:
         check = self.check_goal()
         if check == 1:
             return True
-                    
-        selected_magnet = self.board.get_magnet_pos(x , y)
+
+        selected_magnet = self.board.get_magnet_pos(x, y)
         domain = selected_magnet.get_domain()
 
         for d in domain:
@@ -109,9 +109,8 @@ class CSP:
                         self.print()
                         if self.play(position[0], position[1]):
                             return True
-                            
+
                 self.board.remove_empty(x, y)
-                
 
             check = self.check_goal()
             if check == 1:

@@ -1,4 +1,5 @@
 from Board import Board
+from Magnet import Magnet
 
 
 class CSP:
@@ -64,17 +65,41 @@ class CSP:
 
         return is_goal
 
-    def get_MRV(self):
+    def get_MRV(self) -> Magnet:
+        magnet_score = {}
         
-        return
+        magnets = list(filter(lambda x: not x.isExist and not x.isEmpty , self.board.magnets ))
 
-    def play(self, x: int, y: int):
+        for magnet in magnets:
+            neighbours = self.board.get_neighbour_magnets(magnet)
+            neighbours = list(filter(lambda x: not x.isExist and not x.isEmpty , neighbours ))
+
+            magnet_score[magnet] = len(neighbours)
+
+            magnet_score[magnet] += self.board.col_limit_n[magnet.position[0][1]]
+            magnet_score[magnet] += self.board.col_limit_p[magnet.position[0][1]]
+            magnet_score[magnet] += self.board.row_limit_n[magnet.position[0][0]]
+            magnet_score[magnet] += self.board.row_limit_p[magnet.position[0][0]]
+
+            magnet_score[magnet] += self.board.col_limit_n[magnet.position[1][1]]
+            magnet_score[magnet] += self.board.col_limit_p[magnet.position[1][1]]
+            magnet_score[magnet] += self.board.row_limit_n[magnet.position[1][0]]
+            magnet_score[magnet] += self.board.row_limit_p[magnet.position[1][0]]
+
+        if magnet_score == {}:
+            return None
+
+        max_key = max(magnet_score, key=magnet_score.get)
+        max_value = magnet_score[max_key]
+        return max_key
+
+    def play(self , selected_magnet : Magnet):
 
         check = self.check_goal()
         if check == 1:
             return True
 
-        selected_magnet = self.board.get_magnet_pos(x, y)
+        x , y = selected_magnet.get_position()
         domain = selected_magnet.get_domain()
 
         for d in domain:
@@ -86,12 +111,12 @@ class CSP:
                     limitation_row = self.check_limitation_row()
 
                     if limitation_col and limitation_row:
-                        next_magnet = self.board.get_next_magnet(x, y)
+                        next_magnet = self.get_MRV()
 
                         if next_magnet is not None:
                             position = next_magnet.get_position()
                             self.print()
-                            if self.play(position[0], position[1]):
+                            if self.play(next_magnet):
                                 return True
 
             elif d == 0:
@@ -102,12 +127,12 @@ class CSP:
                 limitation_row = self.check_limitation_row()
 
                 if limitation_col and limitation_row:
-                    next_magnet = self.board.get_next_magnet(x, y)
+                    next_magnet = self.get_MRV()
 
                     if next_magnet is not None:
                         position = next_magnet.get_position()
                         self.print()
-                        if self.play(position[0], position[1]):
+                        if self.play(next_magnet):
                             return True
 
                 self.board.remove_empty(x, y)

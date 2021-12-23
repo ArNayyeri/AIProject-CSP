@@ -1,10 +1,11 @@
 from Board import Board
 from CSP import CSP
 from Magnet import Magnet
+import time
 
 if __name__ == '__main__':
 
-    data = open('input2.txt', 'r').readlines()
+    data = open('input3.txt', 'r').readlines()
 
     mat = []
     m = []
@@ -42,7 +43,13 @@ if __name__ == '__main__':
 
     open('result.txt', 'w').close()
 
+    start = time.time()
+
     csp = CSP(board)
-    csp.play(0, 0)
+    csp.play(csp.get_MRV())
 
     csp.print()
+
+    end = time.time()
+
+    print("\nElapsed Time " , round(end - start , 2) , " s" , sep='' , end='')

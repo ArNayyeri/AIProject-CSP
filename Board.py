@@ -50,6 +50,9 @@ class Board:
             neighbours = self.get_neighbour_magnets(magnet)
             neighbours = list(filter(lambda x: x.isExist , neighbours))
             
+            x1 , y1 = magnet.position[0]
+            x2 , y2 = magnet.position[1]
+
             result = magnet.init_domain.copy()
 
             for neighbour in neighbours :
@@ -70,7 +73,28 @@ class Board:
                 result = list(filter(lambda x: x != [n_xn + 1 , n_yn , False], result))
                 result = list(filter(lambda x: x != [n_xn - 1 , n_yn , False], result))
 
-                #result = list(filter(lambda x: x == [n_x1 , n_y1 , True] and [n_x2 , n_y2] != [n_xn + 1 , n_yn] , result))
+                temp_result = result.copy()
+                
+                for res in result:
+                    if res == [x1 , y1 , True] and [x2 , y2] == [n_xn + 1 , n_yn]:
+                        temp_result = list(filter(lambda x: x != res, temp_result))
+                    if res == [x1 , y1 , True] and [x2 , y2] == [n_xn - 1 , n_yn]:
+                        temp_result = list(filter(lambda x: x != res, temp_result))
+                    if res == [x1 , y1 , True] and [x2 , y2] == [n_xn , n_yn + 1]:
+                        temp_result = list(filter(lambda x: x != res, temp_result))
+                    if res == [x1 , y1 , True] and [x2 , y2] == [n_xn , n_yn - 1]:
+                        temp_result = list(filter(lambda x: x != res, temp_result))
+
+                    if res == [x1 , y1 , False] and [x2 , y2] == [n_xp + 1 , n_yp]:
+                        temp_result = list(filter(lambda x: x != res, temp_result))
+                    if res == [x1 , y1 , False] and [x2 , y2] == [n_xp - 1 , n_yp]:
+                        temp_result = list(filter(lambda x: x != res, temp_result))
+                    if res == [x1 , y1 , False] and [x2 , y2] == [n_xp , n_yp + 1]:
+                        temp_result = list(filter(lambda x: x != res, temp_result))
+                    if res == [x1 , y1 , False] and [x2 , y2] == [n_xp , n_yp - 1]:
+                        temp_result = list(filter(lambda x: x != res, temp_result))
+
+                result = temp_result
             
             magnet.domain = result
 
@@ -144,10 +168,6 @@ class Board:
         magnet = self.get_magnet_pos(x, y)
 
         magnet.put(x, y, isPositive)
-
-        if not self.check_neighbour(magnet):
-            self.remove_magnet(x, y, is_sum=True)
-            return None
 
         xp, yp = magnet.get_positive_pos()
         xn, yn = magnet.get_negative_pos()

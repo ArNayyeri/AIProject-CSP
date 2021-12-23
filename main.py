@@ -46,3 +46,5 @@ if __name__ == '__main__':
 
     csp = CSP(board)
     csp.play(0, 0)
+
+    csp.print()

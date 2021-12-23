@@ -64,13 +64,14 @@ class CSP:
 
         return is_goal
 
-    
+    def get_MRV(self):
+        
+        return
 
     def play(self, x: int, y: int):
 
         check = self.check_goal()
         if check == 1:
-            self.print()
             return True
                     
         selected_magnet = self.board.get_magnet_pos(x , y)
@@ -81,8 +82,6 @@ class CSP:
                 magnet = self.board.place_magnet(d[0], d[1], d[2])
 
                 if magnet is not None:
-                    self.print()
-
                     limitation_col = self.check_limitation_col()
                     limitation_row = self.check_limitation_row()
 
@@ -91,6 +90,7 @@ class CSP:
 
                         if next_magnet is not None:
                             position = next_magnet.get_position()
+                            self.print()
                             if self.play(position[0], position[1]):
                                 return True
 
@@ -106,6 +106,7 @@ class CSP:
 
                     if next_magnet is not None:
                         position = next_magnet.get_position()
+                        self.print()
                         if self.play(position[0], position[1]):
                             return True
                             
@@ -127,14 +128,19 @@ class CSP:
         with open('result.txt', 'a') as buffer:
             buffer.write(str(self.x) + "\n")
             self.x += 1
-            for i in self.board.table:
-                for j in i:
-                    if j == 1:
+            for i in range(self.board.row):
+                for j in range(self.board.col):
+                    magnet = self.board.get_magnet_pos(i , j)
+
+                    value = self.board.table[i][j]
+                    if value == 1:
                         print('+', '', end='')
-                    if j == -1:
+                    if value == -1:
                         print('-', '', end='')
-                    if j == 0:
+                    if value == 0 and not magnet.isEmpty:
                         print('0', '', end='')
+                    if value == 0 and magnet.isEmpty:
+                        print('\u2610', '', end='')
 
                     buffer.write(str(j) + ' ')
                 buffer.write("\n")

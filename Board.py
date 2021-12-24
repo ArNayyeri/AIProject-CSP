@@ -27,13 +27,13 @@ class Board:
         self.col_all = [0 for i in range(col)]
 
     def get_magnet_pos(self, x: int, y: int) -> Magnet:
-        if(x < 0 or y < 0 or x >= self.row or y >= self.col):
+        if(x < 0 or y < 0 or x >= self.col or y >= self.row):
             return None
         else :
-            return self.magnets[self.magnetpos[x][y] - 1]
+            return self.magnets[self.magnetpos[y][x] - 1]
 
     def get_next_magnet(self, x, y) -> Magnet:
-        magnetId = self.magnetpos[x][y] - 1
+        magnetId = self.magnetpos[y][x] - 1
 
         return (
             self.magnets[magnetId + 1]
@@ -121,49 +121,6 @@ class Board:
 
         return magnets
 
-    def check_neighbour(self, magnet: Magnet):
-
-        # Positive Check
-        xp, yp = magnet.get_positive_pos()
-
-        if xp - 1 >= 0:
-            if self.table[xp - 1][yp] == 1:
-                return False
-
-        if yp - 1 >= 0:
-            if self.table[xp][yp - 1] == 1:
-                return False
-
-        if xp + 1 < self.row:
-            if self.table[xp + 1][yp] == 1:
-                return False
-
-        if yp + 1 < self.col:
-            if self.table[xp][yp + 1] == 1:
-                return False
-
-        # Negative Check
-
-        xn, yn = magnet.get_negative_pos()
-
-        if xn - 1 >= 0:
-            if self.table[xn - 1][yn] == -1:
-                return False
-
-        if yn - 1 >= 0:
-            if self.table[xn][yn - 1] == -1:
-                return False
-
-        if xn + 1 < self.row:
-            if self.table[xn + 1][yn] == -1:
-                return False
-
-        if yn + 1 < self.col:
-            if self.table[xn][yn + 1] == -1:
-                return False
-
-        return True
-
     def place_magnet(self, x: int, y: int, isPositive: bool) -> Magnet:
         magnet = self.get_magnet_pos(x, y)
 
@@ -172,18 +129,18 @@ class Board:
         xp, yp = magnet.get_positive_pos()
         xn, yn = magnet.get_negative_pos()
 
-        self.table[xp][yp] = 1
-        self.table[xn][yn] = -1
+        self.table[yp][xp] = 1
+        self.table[yn][xn] = -1
 
-        self.row_p[xp] += 1
-        self.row_n[xn] += 1
-        self.col_p[yp] += 1
-        self.col_n[yn] += 1
+        self.row_p[yp] += 1
+        self.row_n[yn] += 1
+        self.col_p[xp] += 1
+        self.col_n[xn] += 1
 
-        self.row_all[xp] += 1
-        self.col_all[yp] += 1
-        self.row_all[xn] += 1
-        self.col_all[yn] += 1
+        self.row_all[yp] += 1
+        self.col_all[xp] += 1
+        self.row_all[yn] += 1
+        self.col_all[xn] += 1
 
         self.update_domain()
 
@@ -194,22 +151,22 @@ class Board:
 
         if magnet.isExist:
             x1, y1 = magnet.get_positive_pos()
-            self.table[x1][y1] = 0
+            self.table[y1][x1] = 0
 
             if not is_sum:
-                self.row_p[x1] -= 1
-                self.col_p[y1] -= 1
-                self.row_all[x1] -= 1
-                self.col_all[y1] -= 1
+                self.row_p[y1] -= 1
+                self.col_p[x1] -= 1
+                self.row_all[y1] -= 1
+                self.col_all[x1] -= 1
 
             x1, y1 = magnet.get_negative_pos()
-            self.table[x1][y1] = 0
+            self.table[y1][x1] = 0
 
             if not is_sum:
-                self.row_n[x1] -= 1
-                self.col_n[y1] -= 1
-                self.row_all[x1] -= 1
-                self.col_all[y1] -= 1
+                self.row_n[y1] -= 1
+                self.col_n[x1] -= 1
+                self.row_all[y1] -= 1
+                self.col_all[x1] -= 1
 
             magnet.remove()
 

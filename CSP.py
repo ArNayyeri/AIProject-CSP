@@ -76,15 +76,15 @@ class CSP:
 
             magnet_score[magnet] = len(neighbours)
 
-            magnet_score[magnet] += self.board.col_limit_n[magnet.position[0][1]]
-            magnet_score[magnet] += self.board.col_limit_p[magnet.position[0][1]]
-            magnet_score[magnet] += self.board.row_limit_n[magnet.position[0][0]]
-            magnet_score[magnet] += self.board.row_limit_p[magnet.position[0][0]]
+            magnet_score[magnet] += self.board.col_limit_n[magnet.position[0][0]]
+            magnet_score[magnet] += self.board.col_limit_p[magnet.position[0][0]]
+            magnet_score[magnet] += self.board.row_limit_n[magnet.position[0][1]]
+            magnet_score[magnet] += self.board.row_limit_p[magnet.position[0][1]]
 
-            magnet_score[magnet] += self.board.col_limit_n[magnet.position[1][1]]
-            magnet_score[magnet] += self.board.col_limit_p[magnet.position[1][1]]
-            magnet_score[magnet] += self.board.row_limit_n[magnet.position[1][0]]
-            magnet_score[magnet] += self.board.row_limit_p[magnet.position[1][0]]
+            magnet_score[magnet] += self.board.col_limit_n[magnet.position[1][0]]
+            magnet_score[magnet] += self.board.col_limit_p[magnet.position[1][0]]
+            magnet_score[magnet] += self.board.row_limit_n[magnet.position[1][1]]
+            magnet_score[magnet] += self.board.row_limit_p[magnet.position[1][1]]
 
         if magnet_score == {}:
             return None
@@ -95,12 +95,13 @@ class CSP:
 
     def play(self):
 
-        check = self.check_goal()
-        if check == 1:
-            return True
-
         selected_magnet = self.get_MRV()
         if selected_magnet is None:
+
+            check = self.check_goal()
+            if check == 1:
+                return True
+
             return False
 
         x , y = selected_magnet.get_position()
@@ -121,7 +122,6 @@ class CSP:
 
 
             elif d == 0:
-                self.x += 1
                 self.board.put_empty(x, y)
 
                 limitation_col = self.check_limitation_col()
@@ -133,10 +133,6 @@ class CSP:
                         return True
 
                 self.board.remove_empty(x, y)
-
-            check = self.check_goal()
-            if check == 1:
-                return True
 
             self.board.remove_magnet(x, y)
 
@@ -155,7 +151,7 @@ class CSP:
                 print(self.board.row_limit_p[i] , self.board.row_limit_n[i]  , sep=',' , end=' ')
 
                 for j in range(self.board.col):
-                    magnet = self.board.get_magnet_pos(i , j)
+                    magnet = self.board.get_magnet_pos(j , i)
 
                     boldchar = '\033[0m'
                     if magnet == _magnet:
@@ -178,7 +174,12 @@ class CSP:
                 buffer.write("\n")
                 print()
 
-            print('    '  , self.board.col_limit_p , '+  ')
-            print('    '  , self.board.col_limit_n , '  -')
+            seperator = ''
+            for i in range(self.board.col * 3):
+                seperator += '_'
+
+            print('   '  , seperator)
+            print('   '  , self.board.col_p , ' +  ')
+            print('   '  , self.board.col_n , '   -')
 
             buffer.write("------------------\n")

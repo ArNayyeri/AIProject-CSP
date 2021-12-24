@@ -40,6 +40,7 @@ class Magnet:
 
     def remove(self):
         self.isExist = False
+        self.isEmpty = False
         self.positive = -1
         self.negative = -1
 

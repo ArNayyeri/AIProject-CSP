@@ -201,10 +201,10 @@ class Board:
         magnet = self.get_magnet_pos(x, y)
         magnet.isEmpty = True
 
-        self.row_all[magnet.position[0][0]] += 1
-        self.row_all[magnet.position[1][0]] += 1
-        self.col_all[magnet.position[0][1]] += 1
-        self.col_all[magnet.position[1][1]] += 1
+        self.row_all[magnet.position[0][1]] += 1
+        self.row_all[magnet.position[1][1]] += 1
+        self.col_all[magnet.position[0][0]] += 1
+        self.col_all[magnet.position[1][0]] += 1
 
         self.update_domain()
 
@@ -214,10 +214,10 @@ class Board:
         magnet = self.get_magnet_pos(x, y)
         magnet.isEmpty = False
 
-        self.row_all[magnet.position[0][0]] -= 1
-        self.row_all[magnet.position[1][0]] -= 1
-        self.col_all[magnet.position[0][1]] -= 1
-        self.col_all[magnet.position[1][1]] -= 1
+        self.row_all[magnet.position[0][1]] -= 1
+        self.row_all[magnet.position[1][1]] -= 1
+        self.col_all[magnet.position[0][0]] -= 1
+        self.col_all[magnet.position[1][0]] -= 1
 
         self.update_domain()
 

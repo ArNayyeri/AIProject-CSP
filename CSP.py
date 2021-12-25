@@ -120,7 +120,6 @@ class CSP:
                     if self.play():
                         return True
 
-
             elif d == 0:
                 self.board.put_empty(x, y)
 

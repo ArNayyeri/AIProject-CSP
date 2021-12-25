@@ -5,7 +5,7 @@ import time
 
 if __name__ == '__main__':
 
-    data = open('input1.txt', 'r').readlines()
+    data = open('input2.txt', 'r').readlines()
 
     mat = []
     m = []
@@ -34,10 +34,10 @@ if __name__ == '__main__':
         for j in range(col):
             if i + 1 != row:
                 if mat[i][j] == mat[i + 1][j]:
-                    m.append(Magnet(j , i , j , i + 1))
+                    m.append(Magnet(j, i, j, i + 1))
             if j + 1 != col:
                 if mat[i][j] == mat[i][j + 1]:
-                    m.append(Magnet(j, i , j + 1 , i))
+                    m.append(Magnet(j, i, j + 1, i))
 
     board = Board(row, col, row_limit_p, col_limit_p, row_limit_n, col_limit_n, mat, m)
 
@@ -52,4 +52,4 @@ if __name__ == '__main__':
 
     end = time.time()
 
-    print("\nElapsed Time " , round(end - start , 2) , " s with " , csp.x , " moves" , sep='' , end='')
+    print("\nElapsed Time ", round(end - start, 2), " s with ", csp.x, " moves", sep='', end='')

@@ -67,29 +67,16 @@ class CSP:
 
     def get_MRV(self) -> Magnet:
         magnet_score = {}
-        
-        magnets = list(filter(lambda x: not x.isExist and not x.isEmpty , self.board.magnets ))
+
+        magnets = list(filter(lambda x: not x.isExist and not x.isEmpty, self.board.magnets))
 
         for magnet in magnets:
-            neighbours = self.board.get_neighbour_magnets(magnet)
-            neighbours = list(filter(lambda x: not x.isExist and not x.isEmpty , neighbours ))
-
-            magnet_score[magnet] = len(neighbours)
-
-            magnet_score[magnet] += self.board.col_limit_n[magnet.position[0][0]]
-            magnet_score[magnet] += self.board.col_limit_p[magnet.position[0][0]]
-            magnet_score[magnet] += self.board.row_limit_n[magnet.position[0][1]]
-            magnet_score[magnet] += self.board.row_limit_p[magnet.position[0][1]]
-
-            magnet_score[magnet] += self.board.col_limit_n[magnet.position[1][0]]
-            magnet_score[magnet] += self.board.col_limit_p[magnet.position[1][0]]
-            magnet_score[magnet] += self.board.row_limit_n[magnet.position[1][1]]
-            magnet_score[magnet] += self.board.row_limit_p[magnet.position[1][1]]
+            magnet_score[magnet] = len(magnet.get_domain())
 
         if magnet_score == {}:
             return None
 
-        max_key = max(magnet_score, key=magnet_score.get)
+        max_key = min(magnet_score, key=magnet_score.get)
         max_value = magnet_score[max_key]
         return max_key
 
@@ -104,9 +91,8 @@ class CSP:
 
             return False
 
-        x , y = selected_magnet.get_position()
+        x, y = selected_magnet.get_position()
         domain = selected_magnet.get_domain()
-
 
         for d in domain:
             if d != 0:
@@ -137,38 +123,38 @@ class CSP:
 
         return False
 
-    def print(self , _magnet : Magnet ):
+    def print(self, _magnet: Magnet):
         print("-------------------------")
 
         with open('result.txt', 'a') as buffer:
             buffer.write(str(self.x) + "\n")
             self.x += 1
 
-            print('+  ' , self.board.col_limit_p)
-            print('  -' , self.board.col_limit_n)
+            print('+  ', self.board.col_limit_p)
+            print('  -', self.board.col_limit_n)
             for i in range(self.board.row):
-                print(self.board.row_limit_p[i] , self.board.row_limit_n[i]  , sep=',' , end=' ')
+                print(self.board.row_limit_p[i], self.board.row_limit_n[i], sep=',', end=' ')
 
                 for j in range(self.board.col):
-                    magnet = self.board.get_magnet_pos(j , i)
+                    magnet = self.board.get_magnet_pos(j, i)
 
                     boldchar = '\033[0m'
                     if magnet == _magnet:
                         boldchar = '\x1b[6;30;42m'
-                        
+
                     value = self.board.table[i][j]
                     if value == 1:
-                        print(boldchar , '+', '\033[0m', end='')
+                        print(boldchar, '+', '\033[0m', end='')
                     if value == -1:
-                        print(boldchar , '-', '\033[0m', end='')
+                        print(boldchar, '-', '\033[0m', end='')
                     if value == 0 and not magnet.isEmpty:
-                        print(boldchar , '0', '\033[0m', end='')
+                        print(boldchar, '0', '\033[0m', end='')
                     if value == 0 and magnet.isEmpty:
-                        print(boldchar , '\u2610', '\033[0m', end='')
+                        print(boldchar, '\u2610', '\033[0m', end='')
 
                     buffer.write(str(j) + ' ')
 
-                print(' |' , self.board.row_p[i] , ' ', self.board.row_n[i]  , sep='' , end=' ')
+                print(' |', self.board.row_p[i], ' ', self.board.row_n[i], sep='', end=' ')
 
                 buffer.write("\n")
                 print()
@@ -177,8 +163,8 @@ class CSP:
             for i in range(self.board.col * 3):
                 seperator += '_'
 
-            print('   '  , seperator)
-            print('   '  , self.board.col_p , ' +  ')
-            print('   '  , self.board.col_n , '   -')
+            print('   ', seperator)
+            print('   ', self.board.col_p, ' +  ')
+            print('   ', self.board.col_n, '   -')
 
             buffer.write("------------------\n")

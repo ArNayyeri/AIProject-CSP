@@ -27,9 +27,9 @@ class Board:
         self.col_all = [0 for i in range(col)]
 
     def get_magnet_pos(self, x: int, y: int) -> Magnet:
-        if(x < 0 or y < 0 or x >= self.col or y >= self.row):
+        if (x < 0 or y < 0 or x >= self.col or y >= self.row):
             return None
-        else :
+        else:
             return self.magnets[self.magnetpos[y][x] - 1]
 
     def get_next_magnet(self, x, y) -> Magnet:
@@ -43,78 +43,78 @@ class Board:
         )
 
     def update_domain(self):
-        magnets = list(filter(lambda x: not x.isExist , self.magnets))
+        magnets = list(filter(lambda x: not x.isExist, self.magnets))
 
         for magnet in magnets:
 
             neighbours = self.get_neighbour_magnets(magnet)
-            neighbours = list(filter(lambda x: x.isExist , neighbours))
-            
-            x1 , y1 = magnet.position[0]
-            x2 , y2 = magnet.position[1]
+            neighbours = list(filter(lambda x: x.isExist, neighbours))
+
+            x1, y1 = magnet.position[0]
+            x2, y2 = magnet.position[1]
 
             result = magnet.init_domain.copy()
 
-            for neighbour in neighbours :
-                
-                n_x1 , n_y1 = neighbour.position[0]
-                n_x2 , n_y2 = neighbour.position[1]
+            for neighbour in neighbours:
 
-                n_xp , n_yp = neighbour.get_positive_pos()
-                n_xn , n_yn = neighbour.get_negative_pos()
+                n_x1, n_y1 = neighbour.position[0]
+                n_x2, n_y2 = neighbour.position[1]
 
-                result = list(filter(lambda x: x != [n_xp , n_yp + 1 , True], result))
-                result = list(filter(lambda x: x != [n_xp , n_yp - 1 , True], result))
-                result = list(filter(lambda x: x != [n_xp + 1 , n_yp , True], result))
-                result = list(filter(lambda x: x != [n_xp - 1 , n_yp , True], result))
+                n_xp, n_yp = neighbour.get_positive_pos()
+                n_xn, n_yn = neighbour.get_negative_pos()
 
-                result = list(filter(lambda x: x != [n_xn , n_yn + 1 , False], result))
-                result = list(filter(lambda x: x != [n_xn , n_yn - 1 , False], result))
-                result = list(filter(lambda x: x != [n_xn + 1 , n_yn , False], result))
-                result = list(filter(lambda x: x != [n_xn - 1 , n_yn , False], result))
+                result = list(filter(lambda x: x != [n_xp, n_yp + 1, True], result))
+                result = list(filter(lambda x: x != [n_xp, n_yp - 1, True], result))
+                result = list(filter(lambda x: x != [n_xp + 1, n_yp, True], result))
+                result = list(filter(lambda x: x != [n_xp - 1, n_yp, True], result))
+
+                result = list(filter(lambda x: x != [n_xn, n_yn + 1, False], result))
+                result = list(filter(lambda x: x != [n_xn, n_yn - 1, False], result))
+                result = list(filter(lambda x: x != [n_xn + 1, n_yn, False], result))
+                result = list(filter(lambda x: x != [n_xn - 1, n_yn, False], result))
 
                 temp_result = result.copy()
-                
+
                 for res in result:
-                    if res == [x1 , y1 , True] and [x2 , y2] == [n_xn + 1 , n_yn]:
+                    if res == [x1, y1, True] and [x2, y2] == [n_xn + 1, n_yn]:
                         temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1 , y1 , True] and [x2 , y2] == [n_xn - 1 , n_yn]:
+                    if res == [x1, y1, True] and [x2, y2] == [n_xn - 1, n_yn]:
                         temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1 , y1 , True] and [x2 , y2] == [n_xn , n_yn + 1]:
+                    if res == [x1, y1, True] and [x2, y2] == [n_xn, n_yn + 1]:
                         temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1 , y1 , True] and [x2 , y2] == [n_xn , n_yn - 1]:
+                    if res == [x1, y1, True] and [x2, y2] == [n_xn, n_yn - 1]:
                         temp_result = list(filter(lambda x: x != res, temp_result))
 
-                    if res == [x1 , y1 , False] and [x2 , y2] == [n_xp + 1 , n_yp]:
+                    if res == [x1, y1, False] and [x2, y2] == [n_xp + 1, n_yp]:
                         temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1 , y1 , False] and [x2 , y2] == [n_xp - 1 , n_yp]:
+                    if res == [x1, y1, False] and [x2, y2] == [n_xp - 1, n_yp]:
                         temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1 , y1 , False] and [x2 , y2] == [n_xp , n_yp + 1]:
+                    if res == [x1, y1, False] and [x2, y2] == [n_xp, n_yp + 1]:
                         temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1 , y1 , False] and [x2 , y2] == [n_xp , n_yp - 1]:
+                    if res == [x1, y1, False] and [x2, y2] == [n_xp, n_yp - 1]:
                         temp_result = list(filter(lambda x: x != res, temp_result))
 
                 result = temp_result
-            
+
             magnet.domain = result
 
         return
 
-    def get_neighbour_magnets(self , magnet : Magnet) -> List[Magnet] :
+    def get_neighbour_magnets(self, magnet: Magnet) -> List[Magnet]:
         magnets = []
 
         pos1 = magnet.position[0]
-        magnets.append(self.get_magnet_pos(pos1[0] + 1 , pos1[1]))
-        magnets.append(self.get_magnet_pos(pos1[0] - 1 , pos1[1]))
-        magnets.append(self.get_magnet_pos(pos1[0] , pos1[1] + 1))
-        magnets.append(self.get_magnet_pos(pos1[0] , pos1[1] - 1))
+        magnets.append(self.get_magnet_pos(pos1[0] + 1, pos1[1]))
+        magnets.append(self.get_magnet_pos(pos1[0] - 1, pos1[1]))
+        magnets.append(self.get_magnet_pos(pos1[0], pos1[1] + 1))
+        magnets.append(self.get_magnet_pos(pos1[0], pos1[1] - 1))
 
         pos2 = magnet.position[1]
-        magnets.append(self.get_magnet_pos(pos2[0] + 1 , pos2[1]))
-        magnets.append(self.get_magnet_pos(pos2[0] - 1 , pos2[1]))
-        magnets.append(self.get_magnet_pos(pos2[0] , pos2[1] + 1))
-        magnets.append(self.get_magnet_pos(pos2[0] , pos2[1] - 1))
-        
+        magnets.append(self.get_magnet_pos(pos2[0] + 1, pos2[1]))
+        magnets.append(self.get_magnet_pos(pos2[0] - 1, pos2[1]))
+        magnets.append(self.get_magnet_pos(pos2[0], pos2[1] + 1))
+        magnets.append(self.get_magnet_pos(pos2[0], pos2[1] - 1))
+
         magnets = list(dict.fromkeys(magnets))
         magnets.remove(magnet)
         magnets = list(filter(None, magnets))

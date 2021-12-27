@@ -26,8 +26,8 @@ class Board:
         self.row_all = [0 for i in range(row)]
         self.col_all = [0 for i in range(col)]
 
-    def get_magnet_pos(self, x: int, y: int) -> Magnet:
-        if (x < 0 or y < 0 or x >= self.col or y >= self.row):
+    def get_magnet_pos(self, x: int, y: int):
+        if x < 0 or y < 0 or x >= self.col or y >= self.row:
             return None
         else:
             return self.magnets[self.magnetpos[y][x] - 1]
@@ -42,8 +42,8 @@ class Board:
             else None
         )
 
-    def update_domain(self):
-        magnets = list(filter(lambda x: not x.isExist, self.magnets))
+    def update_domain(self, selected_magnet: Magnet):
+        magnets = list(filter(lambda x: not x.isExist, self.get_neighbour_magnets(selected_magnet)))
 
         for magnet in magnets:
 
@@ -98,8 +98,6 @@ class Board:
 
             magnet.domain = result
 
-        return
-
     def get_neighbour_magnets(self, magnet: Magnet) -> List[Magnet]:
         magnets = []
 
@@ -142,7 +140,7 @@ class Board:
         self.row_all[yn] += 1
         self.col_all[xn] += 1
 
-        self.update_domain()
+        self.update_domain(magnet)
 
         return magnet
 
@@ -170,7 +168,7 @@ class Board:
 
             magnet.remove()
 
-            self.update_domain()
+            self.update_domain(magnet)
 
         return magnet
 
@@ -206,7 +204,7 @@ class Board:
         self.col_all[magnet.position[0][0]] += 1
         self.col_all[magnet.position[1][0]] += 1
 
-        self.update_domain()
+        self.update_domain(magnet)
 
         return magnet
 
@@ -219,6 +217,6 @@ class Board:
         self.col_all[magnet.position[0][0]] -= 1
         self.col_all[magnet.position[1][0]] -= 1
 
-        self.update_domain()
+        self.update_domain(magnet)
 
         return magnet

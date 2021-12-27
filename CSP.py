@@ -1,5 +1,6 @@
 from Board import Board
 from Magnet import Magnet
+import ast
 
 
 class CSP:
@@ -65,7 +66,7 @@ class CSP:
 
         return is_goal
 
-    def get_MRV(self) -> Magnet:
+    def get_MRV(self):
         magnet_score = {}
 
         magnets = list(filter(lambda x: not x.isExist and not x.isEmpty, self.board.magnets))
@@ -81,7 +82,6 @@ class CSP:
         return max_key
 
     def play(self):
-
         selected_magnet = self.get_MRV()
         if selected_magnet is None:
 

@@ -9,7 +9,7 @@ class Magnet:
         self.isExist = False
         self.isEmpty = False
 
-        self.init_domain = [[x1, y1, True], [x1, y1, False], 0]
+        self.init_domain = [[x1, y1, False], [x1, y1, True], 0]
         self.domain = self.init_domain
 
         self.positive = -1

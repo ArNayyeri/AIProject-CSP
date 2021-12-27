@@ -66,7 +66,20 @@ class CSP:
 
         return is_goal
 
-    def get_MRV(self):
+    def LCV(self, magnet: Magnet):
+        domain = magnet.get_domain()
+        l = {}
+        for i in domain:
+            if i != 0:
+                l[str(i)] = 0
+                self.board.place_magnet(i[0], i[1], i[2])
+                for j in self.board.get_neighbour_magnets(magnet):
+                    l[str(i)] += len(j.get_domain())
+                self.board.remove_magnet(i[0], i[1])
+        l = dict(sorted(l.items(), key=lambda item: item[1], reverse=True))
+        return l.keys()
+
+    def MRV(self):
         magnet_score = {}
 
         magnets = list(filter(lambda x: not x.isExist and not x.isEmpty, self.board.magnets))
@@ -82,7 +95,7 @@ class CSP:
         return max_key
 
     def play(self):
-        selected_magnet = self.get_MRV()
+        selected_magnet = self.MRV()
         if selected_magnet is None:
 
             check = self.check_goal()
@@ -92,34 +105,33 @@ class CSP:
             return False
 
         x, y = selected_magnet.get_position()
-        domain = selected_magnet.get_domain()
+        domain = self.LCV(selected_magnet)
 
-        for d in domain:
-            if d != 0:
-                self.board.place_magnet(d[0], d[1], d[2])
+        for i in domain:
+            d = ast.literal_eval(i)
+            self.board.place_magnet(d[0], d[1], d[2])
 
-                limitation_col = self.check_limitation_col()
-                limitation_row = self.check_limitation_row()
+            limitation_col = self.check_limitation_col()
+            limitation_row = self.check_limitation_row()
 
-                if limitation_col and limitation_row:
-                    self.print(selected_magnet)
-                    if self.play():
-                        return True
-
-            elif d == 0:
-                self.board.put_empty(x, y)
-
-                limitation_col = self.check_limitation_col()
-                limitation_row = self.check_limitation_row()
-
-                if limitation_col and limitation_row:
-                    self.print(selected_magnet)
-                    if self.play():
-                        return True
-
-                self.board.remove_empty(x, y)
-
+            if limitation_col and limitation_row:
+                self.print(selected_magnet)
+                if self.play():
+                    return True
             self.board.remove_magnet(x, y)
+
+        if selected_magnet.get_domain().__contains__(0):
+            self.board.put_empty(x, y)
+
+            limitation_col = self.check_limitation_col()
+            limitation_row = self.check_limitation_row()
+
+            if limitation_col and limitation_row:
+                self.print(selected_magnet)
+                if self.play():
+                    return True
+
+            self.board.remove_empty(x, y)
 
         return False
 

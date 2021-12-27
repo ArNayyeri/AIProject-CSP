@@ -95,6 +95,7 @@ class CSP:
         return max_key
 
     def play(self):
+        self.AC3()
         selected_magnet = self.MRV()
         if selected_magnet is None:
 
@@ -180,3 +181,46 @@ class CSP:
             print('   ', self.board.col_n, '   -')
 
             buffer.write("------------------\n")
+
+    def AC3(self):
+        contradiction = False
+        Q = list(filter(lambda x: not x.isExist and not x.isEmpty, self.board.magnets))
+        while len(Q) > 0 and not contradiction:
+            magnet = Q.pop(0)
+            for i in list(filter(lambda x: not x.isExist and not x.isEmpty, self.board.get_neighbour_magnets(magnet))):
+                if self.remove_values(magnet, i):
+                    if len(i.domain) == 0:
+                        contradiction = True
+                    Q.append(i)
+
+    def remove_values(self, x: Magnet, y: Magnet):
+        removed = False
+        for i in y.get_domain():
+            if i == 0:
+                self.board.put_empty(y.position[0][0], y.position[0][1])
+                if len(x.get_domain()) == 0:
+                    self.board.remove_empty(y.position[0][0], y.position[0][1])
+                    y.get_domain().remove(i)
+                    removed = True
+                else:
+                    self.board.remove_empty(y.position[0][0], y.position[0][1])
+
+            elif not i[2]:
+                self.board.place_magnet(y.position[0][0], y.position[0][1], False)
+                if len(x.get_domain()) == 0:
+                    self.board.remove_magnet(y.position[0][0], y.position[0][1])
+                    y.get_domain().remove(i)
+                    removed = True
+                else:
+                    self.board.remove_magnet(y.position[0][0], y.position[0][1])
+
+            else:
+                self.board.place_magnet(y.position[0][0], y.position[0][1], True)
+                if len(x.get_domain()) == 0:
+                    self.board.remove_magnet(y.position[0][0], y.position[0][1])
+                    y.get_domain().remove(i)
+                    removed = True
+                else:
+                    self.board.remove_magnet(y.position[0][0], y.position[0][1])
+
+        return removed

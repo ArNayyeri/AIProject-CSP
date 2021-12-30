@@ -107,16 +107,73 @@ class CSP:
         rows = [positions[0][1] , positions[1][1]]
         cols = [positions[0][0] , positions[1][0]]
 
-        magnets = list(filter(lambda x: not x.isExist, self.board.magnets))
-
-        magnets_row = []
-        magnets_col = []
+        magnets = list(filter(lambda x: not x.isExist and not x.isEmpty, self.board.magnets))
 
         for row in rows:
-            magnets_row.append(list(filter(lambda x: x.positions[0][1] == row or x.positions[1][1] == row, magnets)))
+            magnets_row = list(filter(lambda x: x.position[0][1] == row or x.position[1][1] == row, magnets))
+            magnets_row = list(dict.fromkeys(magnets_row))
 
+            if(self.board.row_n[row] >= self.board.row_limit_n[row]):
+                
+                for magnet in magnets_row:
+                    x2, y2 = magnet.position[1]
+
+                    domain = magnet.get_domain()
+                    result = domain.copy()
+
+                    for d in domain:
+                        if d != 0 :
+                            if (d[1] == row and d[2] == False) or (d[1] == row and d[2] == True and y2 == row):
+                                result.remove(d)
+                    
+                    magnet.domain = result
+
+            if(self.board.row_p[row] >= self.board.row_limit_p[row]):
+
+                for magnet in magnets_row:
+                    x2, y2 = magnet.position[1]
+
+                    domain = magnet.get_domain()
+                    result = domain.copy()
+
+                    for d in domain:
+                        if d != 0 :
+                            if (d[1] == row and d[2] == True) or (d[1] == row and d[2] == False and y2 == row):
+                                result.remove(d)
+                    
+                    magnet.domain = result
+                
         for col in cols:
-            magnets_col.append(list(filter(lambda x: x.positions[0][0] == col or x.positions[1][0] == col, magnets)))
+            magnets_col = list(filter(lambda x: x.position[0][0] == col or x.position[1][0] == col, magnets))
+            magnets_col = list(dict.fromkeys(magnets_col))
+
+            if(self.board.col_n[col] >= self.board.col_limit_n[col]):
+                for magnet in magnets_col:
+                    x2, y2 = magnet.position[1]
+
+                    domain = magnet.get_domain()
+                    result = domain.copy()
+
+                    for d in domain:
+                        if d != 0 :
+                            if (d[0] == col and d[2] == False) or (d[0] == col and d[2] == True and x2 == col):
+                                result.remove(d)
+                    
+                    magnet.domain = result
+
+            if(self.board.col_p[col] >= self.board.col_limit_p[col]):
+                for magnet in magnets_col:
+                    x2, y2 = magnet.position[1]
+
+                    domain = magnet.get_domain()
+                    result = domain.copy()
+
+                    for d in domain:
+                        if d != 0 :
+                            if (d[0] == col and d[2] == True) or (d[0] == col and d[2] == False and x2 == col):
+                                result.remove(d)
+                    
+                    magnet.domain = result
 
 
     def play(self):
@@ -145,6 +202,8 @@ class CSP:
             limitation_row = self.check_limitation_row(selected_magnet)
 
             if limitation_col and limitation_row:
+                self.forwardChecking(selected_magnet)
+
                 self.print(selected_magnet)
                 if self.play():
                     return True

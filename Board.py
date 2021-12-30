@@ -119,28 +119,31 @@ class Board:
 
         return magnets
 
-    def place_magnet(self, x: int, y: int, isPositive: bool) -> Magnet:
+    def place_magnet(self, x: int, y: int , isPositive: bool , empty : bool, ) -> Magnet:
         magnet = self.get_magnet_pos(x, y)
 
-        magnet.put(x, y, isPositive)
+        if(not empty):
+            magnet.put(x, y, isPositive)
 
-        xp, yp = magnet.get_positive_pos()
-        xn, yn = magnet.get_negative_pos()
+            xp, yp = magnet.get_positive_pos()
+            xn, yn = magnet.get_negative_pos()
 
-        self.table[yp][xp] = 1
-        self.table[yn][xn] = -1
+            self.table[yp][xp] = 1
+            self.table[yn][xn] = -1
 
-        self.row_p[yp] += 1
-        self.row_n[yn] += 1
-        self.col_p[xp] += 1
-        self.col_n[xn] += 1
+            self.row_p[yp] += 1
+            self.row_n[yn] += 1
+            self.col_p[xp] += 1
+            self.col_n[xn] += 1
 
-        self.row_all[yp] += 1
-        self.col_all[xp] += 1
-        self.row_all[yn] += 1
-        self.col_all[xn] += 1
+            self.update_domain(magnet)
+        else:
+            magnet.isEmpty = True
 
-        self.update_domain(magnet)
+        self.row_all[magnet.position[0][1]] += 1
+        self.row_all[magnet.position[1][1]] += 1
+        self.col_all[magnet.position[0][0]] += 1
+        self.col_all[magnet.position[1][0]] += 1  
 
         return magnet
 
@@ -170,6 +173,14 @@ class Board:
 
             self.update_domain(magnet)
 
+        elif magnet.isEmpty:
+            magnet.isEmpty = False
+
+            self.row_all[magnet.position[0][1]] -= 1
+            self.row_all[magnet.position[1][1]] -= 1
+            self.col_all[magnet.position[0][0]] -= 1
+            self.col_all[magnet.position[1][0]] -= 1
+
         return magnet
 
     def sum_row(self, index: int, isPositive: bool):
@@ -195,28 +206,3 @@ class Board:
         else:
             return self.col_n[index]
 
-    def put_empty(self, x, y) -> Magnet:
-        magnet = self.get_magnet_pos(x, y)
-        magnet.isEmpty = True
-
-        self.row_all[magnet.position[0][1]] += 1
-        self.row_all[magnet.position[1][1]] += 1
-        self.col_all[magnet.position[0][0]] += 1
-        self.col_all[magnet.position[1][0]] += 1
-
-        self.update_domain(magnet)
-
-        return magnet
-
-    def remove_empty(self, x, y) -> Magnet:
-        magnet = self.get_magnet_pos(x, y)
-        magnet.isEmpty = False
-
-        self.row_all[magnet.position[0][1]] -= 1
-        self.row_all[magnet.position[1][1]] -= 1
-        self.col_all[magnet.position[0][0]] -= 1
-        self.col_all[magnet.position[1][0]] -= 1
-
-        self.update_domain(magnet)
-
-        return magnet

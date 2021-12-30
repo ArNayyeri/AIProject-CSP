@@ -86,7 +86,7 @@ class CSP:
             
         return l.keys()
 
-    def MRV(self):
+    def MRV(self) -> Magnet:
         magnet_score = {}
 
         magnets = list(filter(lambda x: not x.isExist and not x.isEmpty, self.board.magnets))
@@ -188,10 +188,12 @@ class CSP:
             return False
 
         x, y = selected_magnet.get_position()
-        domain = self.LCV(selected_magnet)
+        #domain = self.LCV(selected_magnet)
+        domain = selected_magnet.get_domain()
 
         for i in domain:
-            selected_domain = ast.literal_eval(i)
+            #selected_domain = ast.literal_eval(i)
+            selected_domain = i
 
             if selected_domain != 0:
                 self.board.place_magnet(selected_domain[0], selected_domain[1], selected_domain[2] , empty= False)

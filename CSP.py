@@ -1,3 +1,4 @@
+from typing import List
 from Board import Board
 from Magnet import Magnet
 import ast
@@ -10,36 +11,42 @@ class CSP:
 
     def check_limitation_row(self , magnet : Magnet):
         for i in [magnet.position[0][1] , magnet.position[1][1]]:
-            s = self.board.sum_row(i, True)  # positive count
-            if s > self.board.row_limit_p[i]:
+            p = self.board.sum_row(i, True)  # positive count
+            if p > self.board.row_limit_p[i]:
                 return False
 
-            if self.board.row_all[i] == self.board.col and s != self.board.row_limit_p[i]:
+            n = self.board.sum_row(i, False)  # negative count
+            if n > self.board.row_limit_n[i]:
                 return False
 
-            s = self.board.sum_row(i, False)  # negative count
-            if s > self.board.row_limit_n[i]:
+            if self.board.col - self.board.row_all[i] < (self.board.row_limit_n[i] + self.board.row_limit_p[i]) - (n + p) :
                 return False
 
-            if self.board.row_all[i] == self.board.col and s != self.board.row_limit_n[i]:
+            if self.board.row_all[i] == self.board.col and p != self.board.row_limit_p[i]:
+                return False
+
+            if self.board.row_all[i] == self.board.col and n != self.board.row_limit_n[i]:
                 return False
 
         return True
 
     def check_limitation_col(self , magnet : Magnet):
         for i in [magnet.position[0][0] , magnet.position[1][0]]:
-            s = self.board.sum_col(i, True)  # positive count
-            if s > self.board.col_limit_p[i]:
+            p = self.board.sum_col(i, True)  # positive count
+            if p > self.board.col_limit_p[i]:
                 return False
 
-            if self.board.col_all[i] == self.board.row and s != self.board.col_limit_p[i]:
+            n = self.board.sum_col(i, False)  # negative count
+            if n > self.board.col_limit_n[i]:
                 return False
 
-            s = self.board.sum_col(i, False)  # negative count
-            if s > self.board.col_limit_n[i]:
+            if self.board.row - self.board.col_all[i] < (self.board.col_limit_n[i] + self.board.col_limit_p[i]) - (n + p) :
                 return False
 
-            if self.board.col_all[i] == self.board.row and s != self.board.col_limit_n[i]:
+            if self.board.col_all[i] == self.board.row and p != self.board.col_limit_p[i]:
+                return False
+
+            if self.board.col_all[i] == self.board.row and n != self.board.col_limit_n[i]:
                 return False
 
         return True
@@ -99,81 +106,83 @@ class CSP:
 
         min_key = min(magnet_score, key=magnet_score.get)
 
-        return min_key
+        return min_key   
 
     def forwardChecking(self , placed_magnet : Magnet):
+        magnets = list(filter(lambda x: not x.isExist and not x.isEmpty, self.board.magnets))
+
         positions = placed_magnet.position
-        
         rows = [positions[0][1] , positions[1][1]]
         cols = [positions[0][0] , positions[1][0]]
 
-        magnets = list(filter(lambda x: not x.isExist and not x.isEmpty, self.board.magnets))
+        for polarity in [True , False]:
+            for row in rows:
+                shouldcheck = False
 
-        for row in rows:
-            magnets_row = list(filter(lambda x: x.position[0][1] == row or x.position[1][1] == row, magnets))
-            magnets_row = list(dict.fromkeys(magnets_row))
-
-            if(self.board.row_n[row] >= self.board.row_limit_n[row]):
-                
-                for magnet in magnets_row:
-                    x2, y2 = magnet.position[1]
-
-                    domain = magnet.get_domain()
-                    result = domain.copy()
-
-                    for d in domain:
-                        if d != 0 :
-                            if (d[1] == row and d[2] == False) or (d[1] == row and d[2] == True and y2 == row):
-                                result.remove(d)
+                if not polarity :
+                    if(self.board.row_n[row] >= self.board.row_limit_n[row]):
+                        shouldcheck = True
                     
-                    magnet.domain = result
+                else :
+                    if(self.board.row_p[row] >= self.board.row_limit_p[row]):
+                        shouldcheck = True
 
-            if(self.board.row_p[row] >= self.board.row_limit_p[row]):
+                if shouldcheck:
+                    magnets_row = list(filter(lambda x: x.position[0][1] == row or x.position[1][1] == row, magnets))
+                    magnets_row = list(dict.fromkeys(magnets_row))
 
-                for magnet in magnets_row:
-                    x2, y2 = magnet.position[1]
+                    for magnet in magnets_row:
+                        x2, y2 = magnet.position[1]
 
-                    domain = magnet.get_domain()
-                    result = domain.copy()
+                        domain = magnet.get_domain()
+                        result = domain.copy()
 
-                    for d in domain:
-                        if d != 0 :
-                            if (d[1] == row and d[2] == True) or (d[1] == row and d[2] == False and y2 == row):
-                                result.remove(d)
+                        for d in domain:
+                            if d != 0 :
+                                if (d[1] == row and d[2] == polarity) or (d[1] == row and d[2] is not polarity and y2 == row):
+                                    result.remove(d)
+                                    values = placed_magnet.history.get(magnet)
+
+                                    if values is None:
+                                        placed_magnet.history[magnet] = [d]
+                                    else:
+                                        values.append(d)
+                        
+                        magnet.domain = result
+       
+            for col in cols:      
+                shouldcheck = False
+
+                if not polarity :
+                    if(self.board.col_n[col] >= self.board.col_limit_n[col]):
+                        shouldcheck = True
                     
-                    magnet.domain = result
-                
-        for col in cols:
-            magnets_col = list(filter(lambda x: x.position[0][0] == col or x.position[1][0] == col, magnets))
-            magnets_col = list(dict.fromkeys(magnets_col))
+                if polarity :
+                    if(self.board.col_p[col] >= self.board.col_limit_p[col]):
+                        shouldcheck = True
 
-            if(self.board.col_n[col] >= self.board.col_limit_n[col]):
-                for magnet in magnets_col:
-                    x2, y2 = magnet.position[1]
+                if shouldcheck:
+                    magnets_col = list(filter(lambda x: x.position[0][0] == col or x.position[1][0] == col, magnets))
+                    magnets_col = list(dict.fromkeys(magnets_col))
 
-                    domain = magnet.get_domain()
-                    result = domain.copy()
+                    for magnet in magnets_col:
+                        x2, y2 = magnet.position[1]
 
-                    for d in domain:
-                        if d != 0 :
-                            if (d[0] == col and d[2] == False) or (d[0] == col and d[2] == True and x2 == col):
-                                result.remove(d)
-                    
-                    magnet.domain = result
+                        domain = magnet.get_domain()
+                        result = domain.copy()
 
-            if(self.board.col_p[col] >= self.board.col_limit_p[col]):
-                for magnet in magnets_col:
-                    x2, y2 = magnet.position[1]
+                        for d in domain:
+                            if d != 0 :
+                                if (d[0] == col and d[2] == False) or (d[0] == col and d[2] == True and x2 == col):
+                                    result.remove(d)
+                                    values = placed_magnet.history.get(magnet)
 
-                    domain = magnet.get_domain()
-                    result = domain.copy()
-
-                    for d in domain:
-                        if d != 0 :
-                            if (d[0] == col and d[2] == True) or (d[0] == col and d[2] == False and x2 == col):
-                                result.remove(d)
-                    
-                    magnet.domain = result
+                                    if values is None:
+                                        placed_magnet.history[magnet] = [d]
+                                    else:
+                                        values.append(d)
+                        
+                        magnet.domain = result
 
 
     def play(self):
@@ -188,12 +197,14 @@ class CSP:
             return False
 
         x, y = selected_magnet.get_position()
-        #domain = self.LCV(selected_magnet)
-        domain = selected_magnet.get_domain()
+
+        domain = self.LCV(selected_magnet)
+        #domain = selected_magnet.get_domain()
 
         for i in domain:
-            #selected_domain = ast.literal_eval(i)
-            selected_domain = i
+
+            selected_domain = ast.literal_eval(i)
+            #selected_domain = i
 
             if selected_domain != 0:
                 self.board.place_magnet(selected_domain[0], selected_domain[1], selected_domain[2] , empty= False)
@@ -211,7 +222,7 @@ class CSP:
                     return True
 
             self.board.remove_magnet(x, y)
-
+        
         return False
 
     def AC3(self):
@@ -236,7 +247,7 @@ class CSP:
             position = y.get_position()
 
             if domain == 0:
-                self.board.place_magnet(position[0] , position[1] , isPositive= None , empty= True)
+                self.board.place_magnet(position[0] , position[1] , isPositive= False , empty= True)
             else:
                 self.board.place_magnet(domain[0], domain[1], domain[2] , empty= False)
 
@@ -277,7 +288,7 @@ class CSP:
                     if value == 0 and magnet.isEmpty:
                         print(boldchar, '\u2610', '\033[0m', end='')
 
-                    buffer.write(str(j) + ' ')
+                    buffer.write(str(value) + ' ')
 
                 print(' |', self.board.row_p[i], ' ', self.board.row_n[i], sep='', end=' ')
 

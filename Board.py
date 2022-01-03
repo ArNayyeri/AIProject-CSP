@@ -32,71 +32,31 @@ class Board:
         else:
             return self.magnets[self.magnetpos[y][x] - 1]
 
-    def get_next_magnet(self, x, y) -> Magnet:
-        magnetId = self.magnetpos[y][x] - 1
-
-        return (
-            self.magnets[magnetId + 1]
-
-            if (magnetId + 1 < len(self.magnets))
-            else None
-        )
-
-    def update_domain(self, selected_magnet: Magnet):
+    def update_domain(self, selected_magnet: Magnet , putmagnet : bool):
         magnets = list(filter(lambda x: not x.isExist, self.get_neighbour_magnets(selected_magnet)))
 
-        for magnet in magnets:
+        if putmagnet:
+            for magnet in magnets:
+                temp = []
 
-            neighbours = self.get_neighbour_magnets(magnet)
-            neighbours = list(filter(lambda x: x.isExist, neighbours))
+                removeddomains = magnet.check_domain([*selected_magnet.get_positive_pos() , True])
+                if len(removeddomains) > 0:
+                    for rdomain in removeddomains:
+                        temp.append(rdomain)
 
-            x1, y1 = magnet.position[0]
-            x2, y2 = magnet.position[1]
-
-            result = magnet.init_domain.copy()
-
-            for neighbour in neighbours:
-
-                n_x1, n_y1 = neighbour.position[0]
-                n_x2, n_y2 = neighbour.position[1]
-
-                n_xp, n_yp = neighbour.get_positive_pos()
-                n_xn, n_yn = neighbour.get_negative_pos()
-
-                result = list(filter(lambda x: x != [n_xp, n_yp + 1, True], result))
-                result = list(filter(lambda x: x != [n_xp, n_yp - 1, True], result))
-                result = list(filter(lambda x: x != [n_xp + 1, n_yp, True], result))
-                result = list(filter(lambda x: x != [n_xp - 1, n_yp, True], result))
-
-                result = list(filter(lambda x: x != [n_xn, n_yn + 1, False], result))
-                result = list(filter(lambda x: x != [n_xn, n_yn - 1, False], result))
-                result = list(filter(lambda x: x != [n_xn + 1, n_yn, False], result))
-                result = list(filter(lambda x: x != [n_xn - 1, n_yn, False], result))
-
-                temp_result = result.copy()
-
-                for res in result:
-                    if res == [x1, y1, True] and [x2, y2] == [n_xn + 1, n_yn]:
-                        temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1, y1, True] and [x2, y2] == [n_xn - 1, n_yn]:
-                        temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1, y1, True] and [x2, y2] == [n_xn, n_yn + 1]:
-                        temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1, y1, True] and [x2, y2] == [n_xn, n_yn - 1]:
-                        temp_result = list(filter(lambda x: x != res, temp_result))
-
-                    if res == [x1, y1, False] and [x2, y2] == [n_xp + 1, n_yp]:
-                        temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1, y1, False] and [x2, y2] == [n_xp - 1, n_yp]:
-                        temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1, y1, False] and [x2, y2] == [n_xp, n_yp + 1]:
-                        temp_result = list(filter(lambda x: x != res, temp_result))
-                    if res == [x1, y1, False] and [x2, y2] == [n_xp, n_yp - 1]:
-                        temp_result = list(filter(lambda x: x != res, temp_result))
-
-                result = temp_result
-
-            magnet.domain = result
+                removeddomains =  magnet.check_domain([*selected_magnet.get_negative_pos() , False])
+                if len(removeddomains) > 0:
+                    for rdomain in removeddomains:
+                        temp.append(rdomain)
+                    
+                selected_magnet.history[magnet] = temp
+        else :
+            while len(selected_magnet.history) != 0:
+                key , val = selected_magnet.history.popitem()
+                if len(val) > 0:
+                    for value in val:
+                        key.add_to_domain(value)
+                    
 
     def get_neighbour_magnets(self, magnet: Magnet) -> List[Magnet]:
         magnets = []
@@ -119,7 +79,7 @@ class Board:
 
         return magnets
 
-    def place_magnet(self, x: int, y: int , isPositive: bool , empty : bool, ) -> Magnet:
+    def place_magnet(self, x: int, y: int , isPositive: bool , empty : bool) -> Magnet:
         magnet = self.get_magnet_pos(x, y)
 
         if(not empty):
@@ -136,7 +96,7 @@ class Board:
             self.col_p[xp] += 1
             self.col_n[xn] += 1
 
-            self.update_domain(magnet)
+            self.update_domain(magnet , True)
         else:
             magnet.isEmpty = True
 
@@ -171,7 +131,7 @@ class Board:
 
             magnet.remove()
 
-            self.update_domain(magnet)
+            self.update_domain(magnet , False)
 
         elif magnet.isEmpty:
             magnet.isEmpty = False

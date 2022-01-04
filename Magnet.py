@@ -2,7 +2,7 @@ class Magnet:
     def __init__(self, x1: int, y1: int,
                  x2: int, y2: int):
         self.position = []
-        
+
         self.history = {}
 
         self.position.append([x1, y1])
@@ -36,18 +36,18 @@ class Magnet:
 
             self.positive = 1 - self.negative
 
-    def check_domain(self , domain):
+    def check_domain(self, domain):
         mydomain = self.get_domain()
 
         r_domains = []
 
         for _mydomain in mydomain:
-            
+
             if _mydomain == 0:
                 continue
 
             removeddomain = None
-            
+
             if domain[0] + 1 == _mydomain[0] and domain[1] == _mydomain[1] and domain[2] == _mydomain[2]:
                 removeddomain = _mydomain
             if domain[0] - 1 == _mydomain[0] and domain[1] == _mydomain[1] and domain[2] == _mydomain[2]:
@@ -55,9 +55,8 @@ class Magnet:
 
             if domain[0] == _mydomain[0] and domain[1] + 1 == _mydomain[1] and domain[2] == _mydomain[2]:
                 removeddomain = _mydomain
-            if domain[0] == _mydomain[0] and domain[1] -1 == _mydomain[1] and domain[2] == _mydomain[2]:
+            if domain[0] == _mydomain[0] and domain[1] - 1 == _mydomain[1] and domain[2] == _mydomain[2]:
                 removeddomain = _mydomain
-
 
             # if domain[0] + 1 == self.position[1][0] and domain[1] == self.position[1][1] and domain[2] != _mydomain[2]:
             #     removeddomain = _mydomain
@@ -72,11 +71,11 @@ class Magnet:
             if removeddomain is not None:
                 r_domains.append(removeddomain)
                 self.domain.remove(removeddomain)
-    
+
         return r_domains
 
-    def add_to_domain(self , domain):
-        self.domain.insert(0 , domain)
+    def add_to_domain(self, domain):
+        self.domain.insert(0, domain)
 
     def get_domain(self):
         return self.domain

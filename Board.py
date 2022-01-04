@@ -32,31 +32,30 @@ class Board:
         else:
             return self.magnets[self.magnetpos[y][x] - 1]
 
-    def update_domain(self, selected_magnet: Magnet , putmagnet : bool):
+    def update_domain(self, selected_magnet: Magnet, putmagnet: bool):
         magnets = list(filter(lambda x: not x.isExist, self.get_neighbour_magnets(selected_magnet)))
 
         if putmagnet:
             for magnet in magnets:
                 temp = []
 
-                removeddomains = magnet.check_domain([*selected_magnet.get_positive_pos() , True])
+                removeddomains = magnet.check_domain([*selected_magnet.get_positive_pos(), True])
                 if len(removeddomains) > 0:
                     for rdomain in removeddomains:
                         temp.append(rdomain)
 
-                removeddomains =  magnet.check_domain([*selected_magnet.get_negative_pos() , False])
+                removeddomains = magnet.check_domain([*selected_magnet.get_negative_pos(), False])
                 if len(removeddomains) > 0:
                     for rdomain in removeddomains:
                         temp.append(rdomain)
-                    
+
                 selected_magnet.history[magnet] = temp
-        else :
+        else:
             while len(selected_magnet.history) != 0:
-                key , val = selected_magnet.history.popitem()
+                key, val = selected_magnet.history.popitem()
                 if len(val) > 0:
                     for value in val:
                         key.add_to_domain(value)
-                    
 
     def get_neighbour_magnets(self, magnet: Magnet) -> List[Magnet]:
         magnets = []
@@ -79,10 +78,10 @@ class Board:
 
         return magnets
 
-    def place_magnet(self, x: int, y: int , isPositive: bool , empty : bool) -> Magnet:
+    def place_magnet(self, x: int, y: int, isPositive: bool, empty: bool) -> Magnet:
         magnet = self.get_magnet_pos(x, y)
 
-        if(not empty):
+        if (not empty):
             magnet.put(x, y, isPositive)
 
             xp, yp = magnet.get_positive_pos()
@@ -96,14 +95,14 @@ class Board:
             self.col_p[xp] += 1
             self.col_n[xn] += 1
 
-            self.update_domain(magnet , True)
+            self.update_domain(magnet, True)
         else:
             magnet.isEmpty = True
 
         self.row_all[magnet.position[0][1]] += 1
         self.row_all[magnet.position[1][1]] += 1
         self.col_all[magnet.position[0][0]] += 1
-        self.col_all[magnet.position[1][0]] += 1  
+        self.col_all[magnet.position[1][0]] += 1
 
         return magnet
 
@@ -131,7 +130,7 @@ class Board:
 
             magnet.remove()
 
-            self.update_domain(magnet , False)
+            self.update_domain(magnet, False)
 
         elif magnet.isEmpty:
             magnet.isEmpty = False
@@ -165,4 +164,3 @@ class Board:
             return self.col_p[index]
         else:
             return self.col_n[index]
-

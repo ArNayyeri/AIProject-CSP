@@ -5,7 +5,7 @@ import time
 
 if __name__ == '__main__':
 
-    data = open('input2.txt', 'r').readlines()
+    data = open('input3.txt', 'r').readlines()
 
     mat = []
     m = []

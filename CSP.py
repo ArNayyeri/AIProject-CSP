@@ -1,4 +1,3 @@
-from typing import List
 from Board import Board
 from Magnet import Magnet
 import ast
@@ -122,11 +121,11 @@ class CSP:
                 shouldcheck = False
 
                 if not polarity:
-                    if (self.board.row_n[row] >= self.board.row_limit_n[row]):
+                    if self.board.row_n[row] >= self.board.row_limit_n[row]:
                         shouldcheck = True
 
                 else:
-                    if (self.board.row_p[row] >= self.board.row_limit_p[row]):
+                    if self.board.row_p[row] >= self.board.row_limit_p[row]:
                         shouldcheck = True
 
                 if shouldcheck:
@@ -157,11 +156,11 @@ class CSP:
                 shouldcheck = False
 
                 if not polarity:
-                    if (self.board.col_n[col] >= self.board.col_limit_n[col]):
+                    if self.board.col_n[col] >= self.board.col_limit_n[col]:
                         shouldcheck = True
 
                 if polarity:
-                    if (self.board.col_p[col] >= self.board.col_limit_p[col]):
+                    if self.board.col_p[col] >= self.board.col_limit_p[col]:
                         shouldcheck = True
 
                 if shouldcheck:
@@ -176,7 +175,8 @@ class CSP:
 
                         for d in domain:
                             if d != 0:
-                                if (d[0] == col and d[2] == False) or (d[0] == col and d[2] == True and x2 == col):
+                                if (d[0] == col and d[2] == polarity) or (
+                                        d[0] == col and d[2] != polarity and x2 == col):
                                     result.remove(d)
                                     values = placed_magnet.history.get(magnet)
 
@@ -188,7 +188,7 @@ class CSP:
                         magnet.domain = result
 
     def play(self):
-        # self.AC3()
+        #self.AC3()
 
         selected_magnet = self.MRV()
 
